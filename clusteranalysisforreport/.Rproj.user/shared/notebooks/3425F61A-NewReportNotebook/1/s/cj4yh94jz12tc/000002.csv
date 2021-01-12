@@ -1,0 +1,16 @@
+"0","```r
+```r
+studentsData$Gender = factor(studentsData$Gender)
+str(studentsData$Gender)
+```
+```"
+"1","Loading required package: ggplot2
+Registered S3 method overwritten by 'GGally':
+  method from   
+  +.gg   ggplot2
+"
+"0","```r
+studentsData_PCA<-data.frame(studentsData[,c(-1,-2,-3,-6,-7,-8,-13)])
+
+ggpairs(studentsData_PCA)
+```"

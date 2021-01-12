@@ -1,0 +1,1588 @@
+---
+title: "R Notebook"
+output:
+  word_document: default
+  html_notebook: default
+---
+
+---
+title: "R Notebook"
+output:
+  word_document: default
+  html_notebook: default
+  pdf_document: default
+---
+
+The below code, imports the RCurl library which is used to get the data from the online resources.
+```{r}
+library(RCurl)
+
+```
+
+We uses the getURL method of the imported library in order to download the required dataset. And then assigned it into the variable studentsData.
+
+```{r}
+# Collected data from github repository
+x <- getURL("https://raw.githubusercontent.com/adeelahmedcsku/student-dataset/main/20-01-2020-data%20developed%20records%20students-changes%20in%20grading%20system%20-%20data%20developed%20records%20students.csv")
+studentsData <- read.csv(text = x)
+
+```
+
+The preliminary analysis of the shows that there are 939 obervations and total of 12 variables using the **str()** command. 
+```{r}
+str(studentsData)
+```
+Each observation in the above dataset reflects the performance of a student for a random course in exam.  It is composed of the various attributes related to the exams performances. For instances, sessional marks, class participation marks, attendance marks, final exam marks and finally the class attribute which reflects the student grades.
+
+# Univariate Analysis
+
+In univariate analysis, We can see that the Gender,Program, Is.Research.Oriented, Student.Type,class and financial condition are the categorical attributes and need to convert into factors. Some attributes are discrete and integer and the attribute CGPA is contineous. The CGPA is our main attribute to order to analysis the data because its the overall performance of the students.
+
+Factoring the Gender attribute:
+
+```{r}
+studentsData$Gender = factor(studentsData$Gender)
+str(studentsData$Gender)
+```
+Factoring the program attribute:
+
+```{r}
+studentsData$Program = factor(studentsData$Program)
+str(studentsData$Program)
+```
+
+Factoring the Is.Research.Oriented attribute:
+
+```{r}
+studentsData$Is.Research.Oriented = factor(studentsData$Is.Research.Oriented)
+str(studentsData$Is.Research.Oriented)
+```
+
+Factoring the Student.Type attribute:
+
+```{r}
+studentsData$Student.Type = factor(studentsData$Student.Type)
+str(studentsData$Student.Type)
+```
+
+Factoring the Financial.Condition attribute:
+
+```{r}
+studentsData$Financial.Condition = factor(studentsData$Financial.Condition)
+str(studentsData$Financial.Condition)
+```
+
+Factoring the Class attribute:
+
+```{r}
+studentsData$Class = factor(studentsData$Class)
+str(studentsData$Class)
+```
+
+Now, the structure of the dataset is ready to study:
+
+```{r}
+str(studentsData)
+```
+
+Below command is used to see the summary of the dataset:
+
+```{r}
+summary(studentsData)
+```
+
+
+## Gender:
+
+The gender is the categorical variable of type Nominal. It consists of two possible values 'M' for Male and 'F' for female.
+
+```{r}
+table(studentsData$Gender)
+frequencyGender <- table(studentsData$Gender)
+
+```
+
+The percentage distribution of the dataset with respect to the gender can be calculated by multiply to 100.
+
+```{r}
+prop.table(frequencyGender) * 100
+```
+The above frequency clearly elaborate that the dataset is balanced and about 46% are female students and 54% are male students. The frequency in the percentages is shows in the below bar plot.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Gender)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Gender))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+
+
+## Batch Year:
+
+The Batch year is the numerical variable of type integer. It consists of two possible values '2018' and '2019'.
+
+```{r}
+table(studentsData$Batch.year)
+frequencyBatchyear <- table(studentsData$Batch.year)
+
+```
+
+The percentage distribution of the dataset with respect to the batch year can be calculated by multiply to 100.
+
+```{r}
+prop.table(frequencyBatchyear) * 100
+```
+The above frequency clearly elaborate that the dataset is not much balanced and about 43% are 2018 students and 57% are 2019 students. The frequency in the percentages is shows in the below bar plot.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Batch.year)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Gender))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+
+
+## Program:
+
+The program is the Categorical variable of type nominal. It consists of four possible values 'MS(CS)' ,  'MS(MS)', MS(ES) and MS(BA).
+
+```{r}
+table(studentsData$Program)
+frequencyProgram <- table(studentsData$Program)
+
+```
+
+The percentage distribution of the dataset with respect to the Program can be calculated using the below formula.
+```{r}
+prop.table(frequencyProgram) * 100
+```
+
+The above frequency clearly elaborate that the dataset is consiss of 32% Business Administration students, 21% are Computer Science students, 21% are Envoirmental Science students and 24 percent are Media Science students. The frequency in the percentages is shows in the below bar plot.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Program)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Program))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+## Is.Research.Oriented:
+
+
+The Is.Research.Oriented is the categorical variable of type Nominal. It consists of two possible values 'Yes' and 'No'.
+
+```{r}
+table(studentsData$Is.Research.Oriented)
+frequencyIsResearchOriented <- table(studentsData$Is.Research.Oriented)
+
+```
+
+The percentage distribution of the dataset with respect to the Reserch Oriented can be calculated by multiply to 100.
+
+```{r}
+prop.table(frequencyIsResearchOriented) * 100
+```
+
+The above frequency clearly elaborate that the dataset is balanced and about 49% are Not the research oriented students and 51% are research oriented students. The frequency in the percentages is shows in the below bar plot.
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Is.Research.Oriented)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Is.Research.Oriented))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+
+## Student.Type:
+
+The Student.Type is the categorical variable of type Nominal. It consists of two possible values 'Full-Time' and 'Part-Time'.
+
+```{r}
+table(studentsData$Student.Type)
+frequencyStudentType <- table(studentsData$Student.Type)
+
+```
+
+The percentage distribution of the dataset with respect to the student type can be calculated by multiply to 100.
+
+```{r}
+prop.table(frequencyStudentType) * 100
+```
+
+The above frequency clearly elaborate that the dataset is completly balanced and about 50 percent of both the students are present Full-Time and Part-Time. The frequency in the percentages is shows in the below bar plot.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Student.Type)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Student.Type))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+
+## Financial.Condition:
+
+The Financial.Condition is the categorical variable of type Nominal. It consists of three possible values 'Average', 'Bad' and 'Good'.
+
+```{r}
+
+table(studentsData$Financial.Condition)
+frequencyFinancialCondition <- table(studentsData$Financial.Condition)
+
+```
+
+The percentage distribution of the dataset with respect to the financial condition can be calculated by multiply to 100.
+
+```{r}
+prop.table(frequencyFinancialCondition) * 100
+```
+
+The above frequency clearly elaborate that the dataset is partially balanced and about 29 percent of students have Average financial condition, 38 percent of the students have Bad financial condition and 32 percent of the students have Good financial condition. The frequency in the percentages is shows in the below bar plot.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Financial.Condition)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Financial.Condition))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')+
+xlab('Financial Condition')
+
+```
+
+
+
+## Sessional Marks:
+
+The Sessional marks is the Numerical variable of type Integer. It contains the mid-semester exams marks of the students.
+The summary of the sessional mark attribute is given below:
+```{r}
+summary(studentsData$Sessional.Marks)
+
+```
+```{r}
+ boxplot(studentsData$Sessional.Marks)
+```
+The variance provides an estimate of how much the observed data deviate from the mean. The variance is computed as the average squared distance of the values with respect to the mean.
+
+```{r}
+var(studentsData$Sessional.Marks, na.rm=T)
+```
+We can see that the mean is greater than variance which indicates binomial distribution.
+
+```{r}
+sd(studentsData$Sessional.Marks, na.rm=T)
+
+```
+
+The standard deviation tells us something about the “shape” of the distribution. Let’s use aggregate to compute standard deviation of Age for passengers in the different classes.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Sessional.Marks, color=Gender)) +
+geom_density()
+```
+
+
+```{r}
+table(studentsData$Sessional.Marks)
+frequencySessionalMarks <- table(studentsData$Sessional.Marks)
+
+```
+
+The percentage distribution of the dataset with respect to the Program can be calculated using the below formula.
+```{r}
+prop.table(frequencySessionalMarks) * 100
+```
+
+The above frequency in represents the percentages of the sessional Marks in the dataset.
+
+
+
+We can check the index of the most frequent marks as follows:
+
+```{r}
+
+which.max(frequencySessionalMarks)
+
+```
+
+This returns the the position of the max (7) and the name of the maximum value 16. We can obtain the maximum value as follows:
+
+```{r}
+max(frequencySessionalMarks)
+```
+Similarly with the least frequent item:
+
+```{r}
+frequencySessionalMarks[which.min(frequencySessionalMarks)]
+
+```
+
+The frequency table is already telling us something about the sample:
+• The most frequent sessional mark is 16 ;
+• The least frequent sessional mark is 11 ;
+
+The sessional marks barplot with the percentages of the marks is given that:
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Sessional.Marks)) +
+geom_bar(aes(y=(..count..)/sum(..count..)))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+PMF of sessional marks is as:
+
+```{r}
+
+ggplot(studentsData, aes(x=Sessional.Marks, fill=Gender)) +
+geom_bar(aes(y=..prop..), position=position_dodge2(preserve="single"))
+
+```
+For CDF, We can compare the male and female samples by specifying a color=sex aesthetic:
+
+```{r}
+ggplot(studentsData, aes(x=Sessional.Marks,color=Gender)) +
+stat_ecdf() +
+ylab('CDF')
+```
+The density histogram is given below for the sessional marks with respect to the Gender.
+
+
+```{r}
+ggplot(studentsData, aes(x=Sessional.Marks, fill=Gender)) +
+geom_histogram(aes(y=..density.., ), bins=12, color='black', position = position_dodge2(preserve='single')) +
+scale_x_continuous(breaks=seq(min(studentsData$Sessional.Marks),max(studentsData$Sessional.Marks),length=12),
+labels = scales::number_format(accuracy = 0.01))+
+geom_density(aes(color=Gender), fill=NA)
+
+```
+Generalized Additive Models for Location, Scale and Shape (GAMLSS) were introduced by
+Rigby and Stasinopoulos (2001, 2005) and Akantziliotou et al. (2002) as a way of overcoming some of the limitations associated with Generalized Linear Models (GLM) and Generalized Additive Models (GAM) (Nelder and Wedderburn, 1972 and Hastie and Tibshirani, 1990, respectively) which are already part of the R CRAN packages. We install the packages of GAMLSS in R. 
+
+The GAMLSS is the package that is used to select the best model of the statiscal distribution fits to our data. In order to find the best fit model for our data i will keep including the knowlegde of this model library in this document.
+
+The below are some libraries of these packages that we need to include in our code.
+
+```{r}
+library(gamlss.dist)
+library(gamlss)
+library(gamlss.data)
+library(gamlss.add)
+library(gamlss.countKinf)
+library(gamlss.mx)
+```
+
+```{r}
+ dist.poison <- histDist(studentsData$Sessional.Marks, family=PO, nbins = 30, main="Poison distribution",xlab = "Sessional Marks")
+
+```
+```{r}
+dist.poison$aic
+dist.poison$sbc
+
+```
+
+
+```{r}
+Sessional.Marks<- studentsData$Sessional.Marks
+ dist.expo <- histDist(studentsData$Sessional.Marks, family=EXP, nbins = 30, main="Exponential distribution",xlab = "Sessional Marks")
+
+```
+
+```{r}
+ dist.gama <- histDist(studentsData$Sessional.Marks, family=GA, nbins = 30, main="Gamma distribution",xlab = "Sessional Marks")
+
+```
+
+```{r}
+
+dist.gaussian <- histDist(studentsData$Sessional.Marks, family=IG, nbins = 30, main="Gaussian distribution",xlab = "Sessional Marks")
+
+```
+
+```{r}
+
+dist.lognormal <- histDist(studentsData$Sessional.Marks, family=LOGNO, nbins = 30, main="Normal distribution",xlab = "Sessional Marks")
+
+```
+
+# ```{r}
+#  dist.weibull <- histDist(studentsData$Sessional.Marks, family=WEI, nbins = 30, main="Weibull distribution",xlab = "Sessional Marks")
+# 
+# ```
+
+```{r}
+ data.frame(row.names = c("Exponential", "Gamma", "Inverse Gaussian", "Log-Normal", "Poison"),
+ AIC=c(AIC(dist.expo), AIC(dist.gama), AIC(dist.gaussian), AIC(dist.lognormal), AIC(dist.poison)),
+ SBC=c(dist.expo$sbc, dist.gama$sbc, dist.gaussian$sbc, dist.lognormal$sbc, dist.poison$sbc)
+ )
+```
+
+The Akaike information criterion (AIC) is used to estimate the prediction error in the statistical model of the given dataset. It estimates the quiality of each model comparing to the other models.
+AIC estimates the relative amount of information lost by a given model: the less information a model loses, the higher the quality of that model.
+
+The Bayesian information criterion (BIC) or Schwarz information criterion (also SIC, SBC, SBIC) is a criterion for model selection among a finite set of models; the model with the lowest BIC is preferred. It is based, in part, on the likelihood function and it is closely related to the Akaike information criterion (AIC).
+
+In the above table the gamma distribution model is the best fit for our data due to the lowest values of the AIC and SBC.
+
+## Likelihood-ratio test
+
+In order to assess the goodness-of-fit, Likelihood-ratio test between the Exponential model (under the null
+hypotesis) and the Weibull model (under the alternative hypotesis) is computed.
+
+```{r}
+ LR.test(dist.expo,dist.gama)
+```
+The p-values is 0: the null model, i.e. the Exponential distribution, is rejected.
+
+## Mixture Model of Gamma:
+We can also fit mixture distributions, for example the Gamma ones:
+
+```{r}
+
+dist.gamma.mix <- gamlssMXfits(n = 5, Sessional.Marks~1, family = GA, K = 2,data = studentsData)
+
+```
+
+```{r}
+dist.gamma.mix$aic 
+dist.gamma.mix$sbc 
+```
+
+We can see that with the mixture of two Gamma distributions the AIC and BIC values have
+improved, as they are lower than those obtained with the single Gamma distribution: AIC is now
+equal to 5429.286, while the previous value was 5449.719; BIC is now 5453.51, which is lower
+than 5454.564	, which was the previous value.
+
+
+## Class.Participation
+
+The summary of the Class Participation marks attribute is given below:
+
+```{r}
+summary(studentsData$Class.Participation)
+
+```
+```{r}
+ boxplot(studentsData$Class.Participation)
+```
+The variance provides an estimate of how much the observed data deviate from the mean. The variance is computed as the average squared distance of the values with respect to the mean.
+
+```{r}
+var(studentsData$Class.Participation, na.rm=T)
+```
+We can see that the mean is greater than variance which indicates binomial distribution.
+
+```{r}
+sd(studentsData$Class.Participation, na.rm=T)
+
+```
+
+The standard deviation tells us something about the “shape” of the distribution. Let’s use aggregate to compute standard deviation of Age for passengers in the different classes.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Class.Participation, color=Gender)) +
+geom_density()
+```
+
+The class participation marks is the Numerical variable of type Integer. It contains the marks of the student who take part in the class presentation and answering the questions of the teacher.
+
+```{r}
+
+table(studentsData$Class.Participation)
+frequencyClassParticipation <- table(studentsData$Class.Participation)
+
+```
+
+
+The percentage distribution of the dataset with respect to the class participation marks can be calculated using the above formula.
+
+
+```{r}
+prop.table(frequencyClassParticipation) * 100
+```
+
+
+The above frequency in represents the percentages of the Class participation Marks in the dataset.
+
+We can check the index of the most frequent marks as follows:
+
+
+```{r}
+
+which.max(frequencyClassParticipation)
+
+```
+
+
+This returns the the position of the max (7) and the name of the maximum value 16. We can obtain the maximum value as follows:
+
+
+```{r}
+max(frequencyClassParticipation)
+```
+
+
+Similarly with the least frequent item:
+
+
+```{r}
+frequencyClassParticipation[which.min(frequencyClassParticipation)]
+
+```
+
+
+The frequency table is already telling us something about the sample:
+• The most frequent class participation marks is 7 i.e. very few students were able to perform well in order to take all class participation marks;
+• The least frequent sessional mark is 10 ;
+
+The bar plot for the frequencies is given that:
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Class.Participation,fill='Class.Participation')) +
+geom_bar()
+```
+
+
+The Class participation marks barplot with the percentages of the marks is given that:
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Class.Participation)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill='Class.Participation'))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+```
+PMF of Class participation marks is as:
+
+```{r}
+
+ggplot(studentsData, aes(x=Class.Participation, fill=Gender)) +
+geom_bar(aes(y=..prop..), position=position_dodge2(preserve="single"))
+
+```
+For CDF, We can compare the male and female samples by specifying a color=sex aesthetic:
+
+```{r}
+ggplot(studentsData, aes(x=Class.Participation,color=Gender)) +
+stat_ecdf() +
+ylab('CDF')
+```
+The density histogram is given below for the Class Participation marks with respect to the Gender.
+
+
+```{r}
+ggplot(studentsData, aes(x=Class.Participation, fill=Gender)) +
+geom_histogram(aes(y=..density.., ), bins=12, color='black', position = position_dodge2(preserve='single')) +
+scale_x_continuous(breaks=seq(min(studentsData$Class.Participation),max(studentsData$Class.Participation),length=12),
+labels = scales::number_format(accuracy = 0.01))+
+geom_density(aes(color=Gender), fill=NA)
+
+```
+
+Generalized Additive Models for Location, Scale and Shape (GAMLSS) analysis of different statistical models is given below:
+
+
+```{r}
+ dist.poison <- histDist(studentsData$Class.Participation, family=PO, nbins = 30, main="Poison distribution",xlab = "Class Participation")
+
+```
+```{r}
+dist.poison$aic
+dist.poison$sbc
+
+```
+
+
+```{r}
+ dist.expo <- histDist(studentsData$Class.Participation, family=EXP, nbins = 30, main="Exponential distribution",xlab = "Class Participation")
+
+```
+
+```{r}
+ dist.gama <- histDist(studentsData$Class.Participation, family=GA, nbins = 30, main="Gamma distribution",xlab = "Class Participation")
+
+```
+
+```{r}
+
+dist.gaussian <- histDist(studentsData$Class.Participation, family=IG, nbins = 30, main="Gaussian distribution",xlab = "Class.Participation")
+
+```
+
+```{r}
+
+dist.lognormal <- histDist(studentsData$Class.Participation, family=LOGNO, nbins = 30, main="Normal distribution",xlab = "Class Participation")
+
+```
+
+# ```{r}
+#  dist.weibull <- histDist(studentsData$Sessional.Marks, family=WEI, nbins = 30, main="Weibull distribution",xlab = "Sessional Marks")
+# 
+# ```
+
+```{r}
+ data.frame(row.names = c("Exponential", "Gamma", "Inverse Gaussian", "Log-Normal", "Poison"),
+ AIC=c(AIC(dist.expo), AIC(dist.gama), AIC(dist.gaussian), AIC(dist.lognormal), AIC(dist.poison)),
+ SBC=c(dist.expo$sbc, dist.gama$sbc, dist.gaussian$sbc, dist.lognormal$sbc, dist.poison$sbc)
+ )
+```
+
+
+In the above table the Poisson distribution model is the best fit for our data due to the lowest values of the AIC and SBC.
+
+## Likelihood-ratio test
+
+In order to assess the goodness-of-fit, Likelihood-ratio test between the Exponential model (under the null hypotesis) and the Poisson model (under the alternative hypothesis) is computed.
+
+```{r}
+ LR.test(dist.expo,dist.poison)
+```
+The p-values is 0: the null model, i.e. the Exponential distribution, is rejected.
+
+## Mixture Model of Gamma:
+We can also fit mixture distributions, for example the Gamma ones:
+
+```{r}
+
+dist.gamma.mix <- gamlssMXfits(n = 5, Class.Participation~1, family = GA, K = 2,data = studentsData)
+
+```
+
+```{r}
+dist.gamma.mix$aic 
+dist.gamma.mix$sbc 
+```
+
+We can see that with the mixture of two Gamma distributions the AIC and BIC values have
+improved, as they are lower than those obtained with the single Gamma distribution: AIC is now
+equal to 4025.565, while the previous value was 4326.303; SBC is now 4049.789, which is lower
+than 	4335.993	, which was the previous value. Even the mixed gamma function model is much better than the chosen Poisson Model.
+
+## Attendance.Marks
+
+
+The Attendance marks is the Numerical variable of type Integer. It contains the marks of the students according to their attendance in the class.
+
+
+```{r}
+summary(studentsData$Attendance.Marks)
+
+```
+```{r}
+ boxplot(studentsData$Attendance.Marks)
+```
+
+The variance provides an estimate of how much the observed data deviate from the mean. The variance is computed as the average squared distance of the values with respect to the mean.
+
+```{r}
+var(studentsData$Attendance.Marks, na.rm=T)
+```
+We can see that the mean is greater than variance which indicates binomial distribution.
+
+```{r}
+sd(studentsData$Attendance.Marks, na.rm=T)
+
+```
+
+The standard deviation tells us something about the “shape” of the distribution. Let’s use aggregate to compute standard deviation of Age for passengers in the different classes.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Attendance.Marks, color=Gender)) +
+geom_density()
+```
+
+The summary of the Attendance marks attribute is given below:
+
+```{r}
+
+table(studentsData$Attendance.Marks)
+frequencyAttendanceMarks <- table(studentsData$Attendance.Marks)
+
+```
+
+
+The percentage distribution of the dataset with respect to the Attendance marks can be calculated using the above formula.
+
+
+```{r}
+prop.table(frequencyAttendanceMarks) * 100
+```
+
+
+The above frequency in represents the percentages of the attendance Marks in the dataset.
+
+We can check the index of the most frequent marks as follows:
+
+
+```{r}
+
+which.max(frequencyAttendanceMarks)
+
+```
+
+
+This returns the the position of the max (5) and the name of the maximum value 7. We can obtain the maximum number of times a number repeats is as follows:
+
+
+```{r}
+max(frequencyAttendanceMarks)
+```
+
+Similarly with the least frequent item:
+
+
+```{r}
+frequencyAttendanceMarks[which.min(frequencyAttendanceMarks)]
+
+```
+
+
+The frequency table is already telling us something about the sample:
+• The most frequent attendacne marks is 7 it implies that most of the students took average marks in the attendance;
+• The least frequent attendance marks is 1 ;
+
+The bar plot for the frequencies is given that:
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Attendance.Marks,fill='Attendance.Marks')) +
+geom_bar()
+```
+
+
+The Attendance marks barplot with the percentages of the marks is given that:
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Attendance.Marks)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill='Attendance.Marks'))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')+
+xlab('Attendance Marks')
+
+```
+
+PMF of Attendance marks is as:
+
+```{r}
+
+ggplot(studentsData, aes(x=Attendance.Marks, fill=Gender)) +
+geom_bar(aes(y=..prop..), position=position_dodge2(preserve="single"))
+
+```
+
+For CDF, We can compare the male and female samples by specifying a color=sex aesthetic:
+
+```{r}
+ggplot(studentsData, aes(x=Attendance.Marks,color=Gender)) +
+stat_ecdf() +
+ylab('CDF')
+```
+
+The density histogram is given below for the Attendance marks with respect to the Gender.
+
+```{r}
+ggplot(studentsData, aes(x=Attendance.Marks, fill=Gender)) +
+geom_histogram(aes(y=..density.., ), bins=12, color='black', position = position_dodge2(preserve='single')) +
+scale_x_continuous(breaks=seq(min(studentsData$Attendance.Marks),max(studentsData$Attendance.Marks),length=12),
+labels = scales::number_format(accuracy = 0.01))+
+geom_density(aes(color=Gender), fill=NA)
+
+```
+
+Generalized Additive Models for Location, Scale and Shape (GAMLSS) analysis of different statistical models is given below:
+
+
+```{r}
+ dist.poison <- histDist(studentsData$Attendance.Marks, family=PO, nbins = 30, main="Poison distribution",xlab = "Attendance Marks")
+
+```
+```{r}
+dist.poison$aic
+dist.poison$sbc
+
+```
+
+
+```{r}
+ dist.expo <- histDist(studentsData$Attendance.Marks, family=EXP, nbins = 30, main="Exponential distribution",xlab = "Attendance Marks")
+
+```
+
+```{r}
+ dist.gama <- histDist(studentsData$Attendance.Marks, family=GA, nbins = 30, main="Gamma distribution",xlab = "Attendance Marks")
+
+```
+
+```{r}
+
+dist.gaussian <- histDist(studentsData$Attendance.Marks, family=IG, nbins = 30, main="Gaussian distribution",xlab = "Attendance Marks")
+
+```
+
+```{r}
+
+dist.lognormal <- histDist(studentsData$Attendance.Marks, family=LOGNO, nbins = 30, main="Normal distribution",xlab = "Attendance Marks")
+
+```
+
+# ```{r}
+#  dist.weibull <- histDist(studentsData$Sessional.Marks, family=WEI, nbins = 30, main="Weibull distribution",xlab = "Sessional Marks")
+# 
+# ```
+
+```{r}
+ data.frame(row.names = c("Exponential", "Gamma", "Inverse Gaussian", "Log-Normal", "Poison"),
+ AIC=c(AIC(dist.expo), AIC(dist.gama), AIC(dist.gaussian), AIC(dist.lognormal), AIC(dist.poison)),
+ SBC=c(dist.expo$sbc, dist.gama$sbc, dist.gaussian$sbc, dist.lognormal$sbc, dist.poison$sbc)
+ )
+```
+
+
+In the above table the Gamma distribution model is the best fit for our data due to the lowest values of the AIC and SBC.
+
+## Likelihood-ratio test
+
+In order to assess the goodness-of-fit, Likelihood-ratio test between the Exponential model (under the null hypotesis) and the gamma model (under the alternative hypothesis) is computed.
+
+```{r}
+ LR.test(dist.expo,dist.gama)
+```
+The p-values is 0: the null model, i.e. the Exponential distribution, is rejected.
+
+
+## Final.Exam.Marks
+
+The Final Exam marks is the Numerical variable of type Integer. It contains the marks of the students according to their performance in the semester exam.
+
+```{r}
+summary(studentsData$Final.Exam.Marks)
+
+```
+```{r}
+ boxplot(studentsData$Final.Exam.Marks)
+```
+
+
+
+```{r}
+
+table(studentsData$Final.Exam.Marks)
+frequencyFinalExamMarks <- table(studentsData$Final.Exam.Marks)
+
+```
+
+
+The percentage distribution of the dataset with respect to the Final Exams marks can be calculated using the above formula.
+
+
+```{r}
+prop.table(frequencyFinalExamMarks) * 100
+```
+
+
+The above frequency in represents the percentages of the Final Exam Marks in the dataset.
+
+We can check the index of the most frequent marks as follows:
+
+
+```{r}
+
+which.max(frequencyFinalExamMarks)
+
+```
+
+
+This returns the the position of the max (30) and the name of the maximum value 39. We can obtain the maximum number of times a number repeats is as follows:
+
+
+```{r}
+max(frequencyFinalExamMarks)
+```
+
+Similarly with the least frequent item:
+
+
+```{r}
+frequencyFinalExamMarks[which.min(frequencyFinalExamMarks)]
+
+```
+
+
+The frequency table is already telling us something about the sample:
+• The most frequent Final Exams marks is 39 it implies that most of the students performs above average marks in the Final Exams Marks;
+• The least frequent Final Exam marks is 6 ;
+
+The bar plot for the frequencies is given that:
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Final.Exam.Marks,fill='Final.Exam.Marks')) +
+geom_bar()
+```
+
+
+The Final Exam Marks barplot with the percentages of the marks is given that:
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Final.Exam.Marks)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill='Final.Exam.Marks'))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')+
+xlab('Final.Exam.Marks')
+
+```
+PMF of Final Exam marks is as:
+
+```{r}
+
+ggplot(studentsData, aes(x=Final.Exam.Marks, fill=Gender)) +
+geom_bar(aes(y=..prop..), position=position_dodge2(preserve="single"))
+
+```
+
+For CDF, We can compare the male and female samples by specifying a color=sex aesthetic:
+
+```{r}
+ggplot(studentsData, aes(x=Final.Exam.Marks,color=Gender)) +
+stat_ecdf() +
+ylab('CDF')
+```
+
+The density histogram is given below for the Final Exam marks with respect to the Gender.
+
+```{r}
+ggplot(studentsData, aes(x=Final.Exam.Marks, fill=Gender)) +
+geom_histogram(aes(y=..density.., ), bins=12, color='black', position = position_dodge2(preserve='single')) +
+scale_x_continuous(breaks=seq(min(studentsData$Final.Exam.Marks),max(studentsData$Final.Exam.Marks),length=12),
+labels = scales::number_format(accuracy = 0.01))+
+geom_density(aes(color=Gender), fill=NA)
+
+```
+
+Generalized Additive Models for Location, Scale and Shape (GAMLSS) analysis of different statistical models is given below:
+
+
+```{r}
+ dist.poison <- histDist(studentsData$Final.Exam.Marks, family=PO, nbins = 30, main="Poison distribution",xlab = "Final Exam Marks")
+
+```
+```{r}
+dist.poison$aic
+dist.poison$sbc
+
+```
+
+
+```{r}
+ dist.expo <- histDist(studentsData$Final.Exam.Marks, family=EXP, nbins = 30, main="Exponential distribution",xlab = "Final Exam Marks")
+
+```
+
+```{r}
+ dist.gama <- histDist(studentsData$Final.Exam.Marks, family=GA, nbins = 30, main="Gamma distribution",xlab = "Final Exam Marks")
+
+```
+
+```{r}
+
+dist.gaussian <- histDist(studentsData$Final.Exam.Marks, family=IG, nbins = 30, main="Gaussian distribution",xlab = "Final Exam Marks")
+
+```
+
+```{r}
+
+dist.lognormal <- histDist(studentsData$Final.Exam.Marks, family=LOGNO, nbins = 30, main="Normal distribution",xlab = "Final Exam Marks")
+
+```
+
+# ```{r}
+#  dist.weibull <- histDist(studentsData$Sessional.Marks, family=WEI, nbins = 30, main="Weibull distribution",xlab = "Sessional Marks")
+# 
+# ```
+
+```{r}
+ data.frame(row.names = c("Exponential", "Gamma", "Inverse Gaussian", "Log-Normal", "Poison"),
+ AIC=c(AIC(dist.expo), AIC(dist.gama), AIC(dist.gaussian), AIC(dist.lognormal), AIC(dist.poison)),
+ SBC=c(dist.expo$sbc, dist.gama$sbc, dist.gaussian$sbc, dist.lognormal$sbc, dist.poison$sbc)
+ )
+```
+
+
+In the above table the Gamma distribution model is the best fit for our data due to the lowest values of the AIC and SBC.
+
+## Likelihood-ratio test
+
+In order to assess the goodness-of-fit, Likelihood-ratio test between the Exponential model (under the null hypotesis) and the gamma model (under the alternative hypothesis) is computed.
+
+```{r}
+ LR.test(dist.expo,dist.gama)
+```
+The p-values is 0: the null model, i.e. the Exponential distribution, is rejected.
+
+## Mixture Model of Gamma:
+We can also fit mixture distributions, for example the Gamma ones:
+
+```{r}
+
+dist.gamma.mix <- gamlssMXfits(n = 5, Final.Exam.Marks~1, family = GA, K = 2,data = studentsData)
+
+```
+
+```{r}
+dist.gamma.mix$aic 
+dist.gamma.mix$sbc 
+```
+
+We can see that with the mixture of two Gamma distributions the AIC and BIC values have
+improved, as they are lower than those obtained with the single Gamma distribution: AIC is now
+equal to 6585.734, while the previous value was 6706.484; SBC is now 6609.958, which is lower
+than 	6716.174	, which was the previous value. Even the mixed gamma function model is much better than the chosen Poisson Model.
+
+
+## Total
+
+The Total marks is the Numerical variable of type Integer. It is the sum of the total marks obtained on the basis of sessional, class participation and attendance marks.
+
+```{r}
+summary(studentsData$Total)
+
+```
+```{r}
+ boxplot(studentsData$Total)
+```
+The frequencies of the Total marks are given below:
+
+```{r}
+
+table(studentsData$Total)
+frequencyTotal <- table(studentsData$Total)
+
+```
+
+
+The percentage distribution of the dataset with respect to the Total marks can be calculated using the above formula.
+
+
+```{r}
+prop.table(frequencyTotal) * 100
+```
+
+
+The above frequency in represents the percentages of the Total Exam Marks in the dataset.
+
+We can check the index of the most frequent marks as follows:
+
+
+```{r}
+
+which.max(frequencyTotal)
+
+```
+
+
+This returns the the position of the max (32) and the name of the maximum value 70. We can obtain the maximum number of times a number repeats is as follows:
+
+
+```{r}
+max(frequencyTotal)
+```
+
+Similarly with the least frequent item:
+
+
+```{r}
+frequencyTotal[which.min(frequencyTotal)]
+
+```
+
+The frequency table is already telling us something about the sample:
+• The most frequent  Total marks is 70 it implies that most of the students performs above average marks as total;
+• The least frequent Final Exam marks is 30 ;
+
+The bar plot for the frequencies is given that:
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Total,fill='Total')) +
+geom_bar()
+```
+
+
+The Total marks barplot with the percentages of the marks is given that:
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Total)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill='Total'))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')+
+xlab('Total Marks')
+
+```
+PMF of Total marks is as:
+
+```{r}
+
+ggplot(studentsData, aes(x=Total, fill=Gender)) +
+geom_bar(aes(y=..prop..), position=position_dodge2(preserve="single"))
+
+```
+
+For CDF, We can compare the male and female samples by specifying a color=sex aesthetic:
+
+```{r}
+ggplot(studentsData, aes(x=Total,color=Gender)) +
+stat_ecdf() +
+ylab('CDF')
+```
+
+The density histogram is given below for the Total marks with respect to the Gender.
+
+```{r}
+ggplot(studentsData, aes(x=Total, fill=Gender)) +
+geom_histogram(aes(y=..density.., ), bins=12, color='black', position = position_dodge2(preserve='single')) +
+scale_x_continuous(breaks=seq(min(studentsData$Total),max(studentsData$Total),length=12),
+labels = scales::number_format(accuracy = 0.01))+
+geom_density(aes(color=Gender), fill=NA)
+
+```
+
+Generalized Additive Models for Location, Scale and Shape (GAMLSS) analysis of different statistical models is given below:
+
+
+```{r}
+ dist.poison <- histDist(studentsData$Total, family=PO, nbins = 30, main="Poison distribution",xlab = "Total Marks")
+
+```
+```{r}
+dist.poison$aic
+dist.poison$sbc
+
+```
+
+
+```{r}
+ dist.expo <- histDist(studentsData$Total, family=EXP, nbins = 30, main="Exponential distribution",xlab = "Total Marks")
+
+```
+
+```{r}
+ dist.gama <- histDist(studentsData$Total, family=GA, nbins = 30, main="Gamma distribution",xlab = "Total Marks")
+
+```
+
+```{r}
+
+dist.gaussian <- histDist(studentsData$Total, family=IG, nbins = 30, main="Gaussian distribution",xlab = "Total Marks")
+
+```
+
+```{r}
+
+dist.lognormal <- histDist(studentsData$Total, family=LOGNO, nbins = 30, main="Normal distribution",xlab = "Total Marks")
+
+```
+
+# ```{r}
+#  dist.weibull <- histDist(studentsData$Sessional.Marks, family=WEI, nbins = 30, main="Weibull distribution",xlab = "Sessional Marks")
+# 
+# ```
+
+```{r}
+ data.frame(row.names = c("Exponential", "Gamma", "Inverse Gaussian", "Log-Normal", "Poison"),
+ AIC=c(AIC(dist.expo), AIC(dist.gama), AIC(dist.gaussian), AIC(dist.lognormal), AIC(dist.poison)),
+ SBC=c(dist.expo$sbc, dist.gama$sbc, dist.gaussian$sbc, dist.lognormal$sbc, dist.poison$sbc)
+ )
+```
+
+
+In the above table the Gamma distribution model is the best fit for our data due to the lowest values of the AIC and SBC.
+
+## Likelihood-ratio test
+
+In order to assess the goodness-of-fit, Likelihood-ratio test between the Gaussian model (under the null hypothesis) and the gamma model (under the alternative hypothesis) is computed.
+
+```{r}
+ LR.test(dist.gaussian,dist.gama)
+```
+The p-values is 0: the null model, i.e. the Gaussian distribution, is rejected.
+
+## Mixture Model of Gamma:
+We can also fit mixture distributions, for example the Gamma ones:
+
+```{r}
+
+dist.gamma.mix <- gamlssMXfits(n = 5, Total~1, family = GA, K = 2,data = studentsData)
+
+```
+
+```{r}
+dist.gamma.mix$aic 
+dist.gamma.mix$sbc 
+```
+
+We can see that with the mixture of two Gamma distributions the AIC and BIC values have
+improved, as they are lower than those obtained with the single Gamma distribution: AIC is now
+equal to 7099.079, while the previous value was 7337.966; SBC is now 7123.303, which is lower
+than 	7347.656	, which was the previous value. Even the mixed gamma function model is much better than the chosen Poisson Model.
+
+
+## Class:
+
+The Class is the categorical variable of type Nominal. It consists of seven possible values 'A+','A','B+','B','C','D' and 'F' .
+
+```{r}
+summary(studentsData$Class)
+
+```
+
+The frequencies are given below:
+```{r}
+table(studentsData$Class)
+frequencyClass <- table(studentsData$Class)
+
+```
+
+The percentage distribution of the dataset with respect to the Class can be calculated by multiply to 100.
+
+```{r}
+prop.table(frequencyClass) * 100
+```
+
+The above frequency clearly elaborate that the dataset is skewed towards the obove average performances and about 37 percent of students performances is A. The frequency in the percentages is shows in the below bar plot.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Class)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Class))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+
+## CGPA
+
+The CGPA is the Numerical variable of type decimal.It is calculated with the formula mentioned in the table 1 of this report.
+
+```{r}
+summary(studentsData$CGPA)
+```
+
+```{r}
+ boxplot(studentsData$CGPA)
+```
+
+The frequencies of the CGPA are given below:
+
+```{r}
+
+table(studentsData$CGPA)
+frequencyTotal <- table(studentsData$CGPA)
+
+```
+
+
+The percentage distribution of the dataset with respect to the Total marks can be calculated using the above formula.
+
+
+```{r}
+prop.table(frequencyTotal) * 100
+```
+
+
+The above frequency in represents the percentages of the CGPA in the dataset.
+
+We can check the index of the most frequent marks as follows:
+
+
+```{r}
+
+which.max(frequencyTotal)
+
+```
+
+
+This returns the the position of the max (32) and the name of the maximum value 70. We can obtain the maximum number of times a number repeats is as follows:
+
+
+```{r}
+max(frequencyTotal)
+```
+
+Similarly with the least frequent item:
+
+
+```{r}
+frequencyTotal[which.min(frequencyTotal)]
+
+```
+
+The frequency table is already telling us something about the sample:
+• The most frequent  CGPA is 3.88 it implies that most of the students performs above average marks as total;
+• The least frequent Final Exam marks is 1.744 ;
+
+The bar plot for the frequencies is given that:
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=CGPA,fill='CGPA')) +
+geom_bar()
+```
+
+
+The CGPA barplot with the percentages of the marks is given that:
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=CGPA)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill='CGPA'))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')+
+xlab('CGPA')
+
+```
+PMF of CGPA is as:
+
+```{r}
+
+ggplot(studentsData, aes(x=CGPA, fill=Gender)) +
+geom_bar(aes(y=..prop..), position=position_dodge2(preserve="single"))
+
+```
+
+For CDF, We can compare the male and female samples by specifying a color=sex aesthetic:
+
+```{r}
+ggplot(studentsData, aes(x=CGPA,color=Gender)) +
+stat_ecdf() +
+ylab('CDF')
+```
+
+The density histogram is given below for the  CGPA with respect to the Gender.
+
+```{r}
+ggplot(studentsData, aes(x=CGPA, fill=Gender)) +
+geom_histogram(aes(y=..density.., ), bins=12, color='black', position = position_dodge2(preserve='single')) +
+scale_x_continuous(breaks=seq(min(studentsData$CGPA),max(studentsData$CGPA),length=12),
+labels = scales::number_format(accuracy = 0.01))+
+geom_density(aes(color=Gender), fill=NA)
+
+```
+
+Generalized Additive Models for Location, Scale and Shape (GAMLSS) analysis of different statistical models is given below:
+
+
+
+
+```{r}
+ dist.expo <- histDist(studentsData$CGPA, family=EXP, nbins = 30, main="Exponential distribution",xlab = "CGPA")
+
+```
+
+```{r}
+ dist.gama <- histDist(studentsData$CGPA, family=GA, nbins = 30, main="Gamma distribution",xlab = "CGPA")
+
+```
+
+```{r}
+
+dist.gaussian <- histDist(studentsData$CGPA, family=IG, nbins = 30, main="Gaussian distribution",xlab = "CGPA")
+
+```
+
+```{r}
+
+dist.lognormal <- histDist(studentsData$CGPA, family=LOGNO, nbins = 30, main="Normal distribution",xlab = "CGPA")
+
+```
+
+```{r}
+dist.weibull <- histDist(studentsData$CGPA, family=WEI, nbins = 30, main="Weibull distribution",xlab = "CGPA")
+ 
+```
+
+ 
+```{r}
+ data.frame(row.names = c("Exponential", "Gamma", "Inverse Gaussian", "Log-Normal", "Weibull"),
+ AIC=c(AIC(dist.expo), AIC(dist.gama), AIC(dist.gaussian), AIC(dist.lognormal), AIC(dist.weibull)),
+ SBC=c(dist.expo$sbc, dist.gama$sbc, dist.gaussian$sbc, dist.lognormal$sbc, dist.weibull$sbc)
+ )
+```
+
+
+In the above table the Weibull distribution model is the best fit for our data due to the lowest values of the AIC and SBC.
+
+## Likelihood-ratio test
+
+In order to assess the goodness-of-fit, Likelihood-ratio test between the gamma model (under the null hypothesis) and the weibull model (under the alternative hypothesis) is computed.
+
+```{r}
+ LR.test(dist.gama,dist.weibull)
+```
+The p-values is 0: the null model, i.e. the Gamma distribution, is rejected.
+
+## Mixture Model of Gamma:
+We can also fit mixture distributions, for example the Gamma ones:
+
+```{r}
+
+dist.gamma.mix <- gamlssMXfits(n = 5, CGPA~1, family = GA, K = 2,data = studentsData)
+
+```
+
+```{r}
+dist.gamma.mix$aic 
+dist.gamma.mix$sbc 
+```
+
+We can see that with the mixture of two Gamma distributions the AIC and BIC values have
+improved, as they are lower than those obtained with the single Gamma distribution: AIC is now
+equal to 1156.329, while the previous value was 1789.262; SBC is now 1180.553, which is lower
+than 	1798.951, which was the previous value. Even the mixed gamma function model is much better than the chosen Weibull Model.
+
+# Priciple Component Analysis:
+
+Principal component analysis (PCA) allows us to summarize and to visualize the information in a data set containing statistical units described by multiple correlated quantitative variables. Each variable could be considered as a different dimension.
+
+PCA is used to extract the important information from a multivariate data set and to
+express this information as a set of few new variables called principal components
+(PCs). These new variables correspond to a linear combination of the originals. The
+number of PCs is less than or equal to the number of original variables.
+
+Before extracting the PCAs first we need to analysis the correlation between the numerical attributes.
+```{r}
+library(GGally)
+studentsData_PCA<-data.frame(studentsData[,c(-1,-2,-3,-6,-7,-8,-13)])
+
+ggpairs(studentsData_PCA)
+```
+The plot above shows:
+
+All scatterplots in the bottom part;
+Density estimates of the univariate samples on the diagonal;
+Pearson Correlation coefficients in the upper part;
+
+The stars next to the correlation values indicate whether the correlation is significant. In particular:
+One star means that the p-value is in the range  [0.01,0.05];
+Two stars mean that the p-value is in the range [0.001,0.01];
+Three stars mean that the p-value is in the range[0,0.001];
+
+Hence, we need at least one star to say that the observed correlation is significant.
+
+From the analysis of the plot above, we can see that the strongest correlation is between Sessional Marks and Total Marks; and also with the final exam marks and total marks while there is a moderate correlation between others variables. While the corelation between class participation marks and final exam marks have no significance corelation.
+
+If we consider the financial condition of the students then the below plot shows that:
+
+```{r}
+ggpairs(studentsData, #dataset
+        columns = c(4,5,9,10,11,12), #select only the first four columns (exclude Species) 
+        aes(color=Financial.Condition)) #color points by species
+```
+Lets throw the updated, numeric data only dataset into the pca function, prcomp.
+Here, we used the scaling which means to standardize the variance across variables.
+
+```{r}
+pca <- prcomp(studentsData_PCA, center = TRUE,scale. = TRUE)
+
+```
+
+As, the PCA goal is to reduce the dimension and remove those PCs which have less meaningful variance.
+```{r}
+summary(pca)
+
+```
+```{r}
+pca$rotation[, 1:6]
+```
+
+
+We have to see the proportion of variance in order to reduced the dimension of the PCs.
+It is clearly from the above table that we can consider the first four principle components to work with because they have some significant variance proportions. 
+
+We can use the biplot to represent at the same time original variables, principal components and
+the sample units (PC scores):
+
+```{r}
+biplot(pca, scale=0)
+```
+From the above plot we can see that there is the high correlation between Total, Final exam marks, attendance marks and Sessional Marks.
+
+
+
+But, There are several criteria to do so. These are all heuristic rules rather than rigorous methodologies. The reason is that PCA is completely distribution free. We can choose PCs based on:
+
+
+
+Kaiser’s rule: omit the PCs containing less information than the mean information per PC;
+
+
+```{r}
+pca.var = (pca$sdev)^2
+round(pca.var,3)
+
+```
+
+The rule suggests retaining the principal components with variance greater than 1, reason
+why we can retain the first 2 PCs.
+
+cumulative proportion of variance explained: extract the first  PCs which are able to
+explain a substantial proportion of variance explained;
+
+```{r}
+ pve = pca.var/sum(pca.var)
+ round(pve,3) *100
+```
+According to the CPVE we have to retain as many PCs as needed to explain at least the 80%
+of the total variance, hence we have to retain the first 4 PCs.
+
+scree plot: retain as many components as until a significant jump on the scree-plot appears;
+
+```{r}
+
+screeplot(pca, npcs = length(pca$sdev), type = "lines", main = "Scree Plot for PCA")
+
+```
+
+
+
+```{r}
+
+ plot(cumsum(pve), xlab="Principal Component", ylab="Cumulative Proportion of Variance Explained",ylim=c(0,1),type='b', main= "Cumulative Scree Plot")
+
+```
+
+## PCA result
+The cumulative PVE rule suggests retaining the first Four principal components, the Kaiser’s rule suggest retaining the first two principal components while the Scree plot  provide a much clear result. The reduction from d=6 original variables to 4 PCs.
+
+
+
+

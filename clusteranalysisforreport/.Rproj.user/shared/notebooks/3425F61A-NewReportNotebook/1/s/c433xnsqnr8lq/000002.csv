@@ -1,0 +1,4 @@
+"0","```r
+pca <- prcomp(studentsData_PCA, center = TRUE,scale. = TRUE)
+
+```"

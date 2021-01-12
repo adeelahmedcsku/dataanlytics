@@ -1,0 +1,703 @@
+---
+title: "Cluster Analysis"
+output: html_notebook
+---
+```{r}
+library(RCurl)
+
+```
+```{r}
+# Collected data from github repository
+x <- getURL("https://raw.githubusercontent.com/adeelahmedcsku/student-dataset/main/20-01-2020-data%20developed%20records%20students-changes%20in%20grading%20system%20-%20data%20developed%20records%20students.csv")
+studentsData <- read.csv(text = x)
+
+```
+
+```{r}
+studentsData$Gender =as.numeric(factor(studentsData$Gender))
+str(studentsData$Gender)
+```
+Factoring the program attribute:
+
+```{r}
+studentsData$Program =as.numeric(factor(studentsData$Program))
+str(studentsData$Program)
+```
+
+Factoring the Is.Research.Oriented attribute:
+
+```{r}
+studentsData$Is.Research.Oriented = as.numeric(factor(studentsData$Is.Research.Oriented))
+str(studentsData$Is.Research.Oriented)
+```
+
+Factoring the Student.Type attribute:
+
+```{r}
+studentsData$Student.Type = as.numeric(factor(studentsData$Student.Type))
+str(studentsData$Student.Type)
+```
+
+Factoring the Financial.Condition attribute:
+
+```{r}
+studentsData$Financial.Condition = as.numeric(factor(studentsData$Financial.Condition))
+str(studentsData$Financial.Condition)
+```
+
+Factoring the Class attribute:
+
+```{r}
+studentsData$Class = as.numeric(factor(studentsData$Class))
+str(studentsData$Class)
+```
+
+
+
+
+# Cluster Analysis
+
+Clustering is one of the important data mining methods for discovering knowledge
+in multidimensional data. The goal of clustering is to identify pattern or groups of
+similar objects within a data set of interest.
+In the literature, it is referred as “pattern recognition” or “unsupervised machine
+learning” - “unsupervised” because we are not guided by a priori ideas of which
+variables or samples belong in which clusters. “Learning” because the machine
+algorithm “learns” how to cluster.
+
+The Clustering involves several steps. The first step is to calculate the dissimilarity matrix amoung the cluster units.
+
+The value of distance measures is intimately related to the scale on which measurements are made. Therefore, variables are often scaled (i.e. standardized) before measuring the inter-observation dissimilarities.
+
+```{r}
+studentsData.scaled <- scale(studentsData)
+
+```
+
+The Euclidean distance of the dataset is show below.
+
+```{r}
+dist.eucl <- dist(studentsData.scaled, method = "euclidean")
+dist.eucl.matrix<-round(as.matrix(dist.eucl)[1:13, 1:13], 2)
+rownames(dist.eucl.matrix) <- c("G","B.Y","Pro","S.M","C.P","R.O","S.T","F.C","A.M","F.E.M","Total","CGPA","Class")
+colnames(dist.eucl.matrix) <- c("G","B.Y","Pro","S.M","C.P","R.O","S.T","F.C","A.M","F.E.M","Total","CGPA","Class")
+dist.eucl.matrix
+
+
+```
+The most dissimilarity we can see in the table is between Attendance Marks(A.M) and Research Oriented (R.O) which is 8.08. while the most similar is  class participation marks and research oriented attribute which 2.50.
+
+We can also try to compute the Manhattan distance:
+ 
+```{r}
+dist.man <- dist(studentsData.scaled, method = "manhattan")
+dist.man.matrix<-round(as.matrix(dist.man)[1:13, 1:13], 2)
+rownames(dist.man.matrix) <-c("G","B.Y","Pro","S.M","C.P","R.O","S.T","F.C","A.M","F.E.M","Total","CGPA","Class")
+colnames(dist.man.matrix)<-c("G","B.Y","Pro","S.M","C.P","R.O","S.T","F.C","A.M","F.E.M","Total","CGPA","Class")
+dist.man.matrix
+
+
+```
+
+The maximum distance is between Research Oriented and Attendance marks is maximum and minimum distance is between class participation and research oriented which is same as euclidean distance. So there is no difference in these two distance matrices we can say that there is no outlier in our dataset.
+
+We can do the same observations by looking at the graphical visualization of the distance matrix:
+
+```{r}
+library(factoextra)
+
+fviz_dist(dist.eucl)
+```
+The red represents high similarity and blue represents low dissimilarity.
+
+# Hierarchical clustering method
+
+Hierarchical clustering is a method of CA which seeks to build a hierarchy of clusters. Hierarchical clustering methods do not require the number of clusters K as an input (i.e., to be fixed in advance).
+
+Strategies for hierarchical clustering generally fall into two types:
+1. Agglomerative hierarchical clustering
+2. Divisive hierarchical clustering
+
+#Agglomerative hierarchical clustering
+
+## Using Euclidean Distance and Ward's Linkage Methods:
+
+```{r}
+res.hc <- hclust(d = dist.eucl, method = "ward.D2")
+fviz_dend(res.hc, cex = 0.5)
+
+```
+The height of the fusion, provided on the vertical axis, indicates the (dis)similarity/distance
+between two objects/clusters. The higher the height of the fusion, the less similar the
+objects are. This height is known as the cophenetic distance between the two objects.
+
+```{r}
+# Compute cophentic distance
+res.coph <- cophenetic(res.hc)
+```
+
+```{r}
+# Correlation between cophenetic distance and
+# the original distance
+cor(dist.eucl, res.coph)
+```
+
+
+
+```{r}
+grp <- cutree(res.hc, k = 4)
+ fviz_dend(res.hc, k = 4, cex = 0.5, k_colors = c("#1762b3", "#E7B800", "#FC4E07","#116300"), color_labels_by_k = TRUE,rect = TRUE)
+
+```
+The last cluster is bigger than the first two clusters
+
+```{r}
+table(grp)
+  
+```
+We can visualize the clustering results in the original space via the matrix of pairwise scatterplots:
+
+```{r}
+ pairs(studentsData, gap=0, pch=grp, col=c("#1762b3", "#E7B800", "#FC4E07","#116300")[grp])
+
+```
+
+
+
+
+
+
+
+
+
+## Using Euclidean Distance and Average Linkage Methods:
+
+```{r}
+res.hc <- hclust(d = dist.eucl, method = "average")
+fviz_dend(res.hc, cex = 0.5)
+
+```
+
+The height of the fusion, provided on the vertical axis, indicates the (dis)similarity/distance
+between two objects/clusters. The higher the height of the fusion, the less similar the
+objects are. This height is known as the cophenetic distance between the two objects.
+
+```{r}
+# Compute cophentic distance
+res.coph <- cophenetic(res.hc)
+```
+
+```{r}
+# Correlation between cophenetic distance and
+# the original distance
+cor(dist.eucl, res.coph)
+```
+
+The correlation value is 0.723 which is very good with compare to the previous WARD.D2 method.
+
+
+```{r}
+grp <- cutree(res.hc, k = 4)
+ fviz_dend(res.hc, k = 4, cex = 0.5, k_colors = c("#1762b3", "#E7B800", "#FC4E07","#116300"), color_labels_by_k = TRUE,rect = TRUE)
+
+```
+The last cluster is bigger than the first two clusters
+
+```{r}
+table(grp)
+  
+```
+We can visualize the clustering results in the original space via the matrix of pairwise scatterplots:
+
+```{r}
+ pairs(studentsData, gap=0, pch=grp, col=c("#1762b3", "#E7B800", "#FC4E07","#116300")[grp])
+
+```
+
+
+
+
+
+
+
+## Using Euclidean Distance and Single Linkage Methods:
+
+```{r}
+res.hc <- hclust(d = dist.eucl, method = "single")
+fviz_dend(res.hc, cex = 0.5)
+
+```
+
+The height of the fusion, provided on the vertical axis, indicates the (dis)similarity/distance
+between two objects/clusters. The higher the height of the fusion, the less similar the
+objects are. This height is known as the cophenetic distance between the two objects.
+
+```{r}
+# Compute cophentic distance
+res.coph <- cophenetic(res.hc)
+```
+
+```{r}
+# Correlation between cophenetic distance and
+# the original distance
+cor(dist.eucl, res.coph)
+```
+
+The correlation value is 0.54 which is very bad with compare to the previous linkage method method.This means that this clustering method does not preserve the true original distances between units.
+
+
+```{r}
+grp <- cutree(res.hc, k = 4)
+ fviz_dend(res.hc, k = 4, cex = 0.5, k_colors = c("#1762b3", "#E7B800", "#FC4E07","#116300"), color_labels_by_k = TRUE,rect = TRUE)
+
+```
+As we can see, almost all units are grouped in a single cluster and we can check this also through
+the R code which gives us the clusters size:
+```{r}
+table(grp)
+  
+```
+We can visualize the clustering results in the original space via the matrix of pairwise scatterplots:
+
+```{r}
+ pairs(studentsData, gap=0, pch=grp, col=c("#1762b3", "#E7B800", "#FC4E07","#116300")[grp])
+
+```
+
+## Using Manhattan Distance and WARD'S Linkage Methods:
+
+```{r}
+res.hc <- hclust(d = dist.man, method = "ward.D2")
+fviz_dend(res.hc, cex = 0.5)
+
+```
+
+The height of the fusion, provided on the vertical axis, indicates the (dis)similarity/distance
+between two objects/clusters. The higher the height of the fusion, the less similar the
+objects are. This height is known as the cophenetic distance between the two objects.
+
+```{r}
+# Compute cophentic distance
+res.coph <- cophenetic(res.hc)
+```
+
+```{r}
+# Correlation between cophenetic distance and
+# the original distance
+cor(dist.eucl, res.coph)
+```
+
+The correlation value is 0.47 which is very low it means this clustering method doesnot preserve the orginal distances.
+
+
+```{r}
+grp <- cutree(res.hc, k = 4)
+ fviz_dend(res.hc, k = 4, cex = 0.5, k_colors = c("#1762b3", "#E7B800", "#FC4E07","#116300"), color_labels_by_k = TRUE,rect = TRUE)
+
+```
+As we can see, almost all units are grouped in a single cluster and we can check this also through
+the R code which gives us the clusters size:
+```{r}
+table(grp)
+  
+```
+We can visualize the clustering results in the original space via the matrix of pairwise scatterplots:
+
+```{r}
+ pairs(studentsData, gap=0, pch=grp, col=c("#1762b3", "#E7B800", "#FC4E07","#116300")[grp])
+
+```
+
+## Using Manhattan Distance and Average Linkage Methods:
+
+```{r}
+res.hc <- hclust(d = dist.eucl, method = "average")
+fviz_dend(res.hc, cex = 0.5)
+
+```
+
+The height of the fusion, provided on the vertical axis, indicates the (dis)similarity/distance
+between two objects/clusters. The higher the height of the fusion, the less similar the
+objects are. This height is known as the cophenetic distance between the two objects.
+
+```{r}
+# Compute cophentic distance
+res.coph <- cophenetic(res.hc)
+```
+
+```{r}
+# Correlation between cophenetic distance and
+# the original distance
+cor(dist.eucl, res.coph)
+```
+
+The correlation value is 0.723 which is same as the Euclidean distance using the average linkage method and its the best 
+
+
+```{r}
+grp <- cutree(res.hc, k = 4)
+ fviz_dend(res.hc, k = 4, cex = 0.5, k_colors = c("#1762b3", "#E7B800", "#FC4E07","#116300"), color_labels_by_k = TRUE,rect = TRUE)
+
+```
+As we can see, almost all units are grouped in a single cluster and we can check this also through
+the R code which gives us the clusters size:
+```{r}
+table(grp)
+  
+```
+We can visualize the clustering results in the original space via the matrix of pairwise scatterplots:
+
+```{r}
+ pairs(studentsData, gap=0, pch=grp, col=c("#1762b3", "#E7B800", "#FC4E07","#116300")[grp])
+
+```
+
+
+
+
+The above heirarchical agglomerative clustering analysis of the dataset suggest that the best combination is with the Euclidean distance with linkage method and same with Manhattan distance as well. 
+
+# Partitioning clustering
+
+## K-Means Clustering:
+
+K-means clustering is the most commonly used partitioning clustering algorithm. It
+classifies the n units to the K clusters such that units within the same cluster are as
+similar as possible (high cluster cohesion), whereas units from different clusters are as
+dissimilar as possible (high cluster separation).
+
+The basic idea behind k-means clustering consists of defining clusters so that the total
+intra-cluster variation (known as total within-cluster variation) is minimized.
+
+The K-means clustering requires the users to specify the number of clusters K to be
+generated.
+
+
+```{r}
+library(factoextra)
+fviz_nbclust(studentsData, kmeans, method = "wss") +
+geom_vline(xintercept = 4, linetype = 2)
+```
+
+The plot above represents the variance within the clusters. It decreases as k increases,
+but it can be seen a bend (or “elbow”) at k = 4. This bend indicates that additional
+clusters beyond the fourth have little value. In the next section, we’ll classify the
+observations into 4 clusters.
+
+The K-means clustering using the cluster size 4 is given below:
+
+```{r}
+kmean.res <- kmeans(studentsData, 4, nstart = 25)
+```
+
+This time we have 4 clusters, the largest being the third, as we can see by the R code:
+```{r}
+ kmean.res$size
+```
+```{r}
+# Print the results
+print(kmean.res)
+```
+
+
+
+```{r}
+ fviz_cluster(kmean.res, data = studentsData,palette = c("#2E9FDF", "#FC4E07", "#CF3E4B", "#287233"),ellipse.type = "euclid", star.plot = TRUE,repel = TRUE, ggtheme = theme_minimal() )
+```
+
+We can see that separation between clusters is not so clear, because some units are closer to a
+different cluster than the one they belong to. 
+
+
+```{r}
+cl2 <- kmean.res$cluster
+pairs(studentsData, gap=0, pch=cl2, col=c("#2E9FDF", "#FC4E07","#CF3E4B", "#287233")[cl2])
+```
+
+From this plot we can understand what variables are useful to find clusters.
+ The variable sessional marks and final exams marks have good seperation between the clusters in the scatered plot.So if we remove some initial variables from the data it will be good to find the more accurate clusters.But, most of the variables in this case are overlapped and it is difficult to find the clusters in it.
+  
+## K-Medoids Clustering:
+
+Differently from K-means, in K-medoids clustering each cluster is represented by one of the data points in the cluster. These points are named cluster medoids. The term medoid refers to a unit within a cluster for which average dissimilarity between it and all the other members of the cluster is minimal. It corresponds to the most centrally located point in the cluster. These units (one per cluster) can be considered as a representative example of the members of that cluster.
+
+The most common K-medoids clustering method is the PAM (partitioning around medoids) algorithm.
+
+The K-medoids algorithm requires the user to specify K, the number of clusters to be
+generated (like in K-means clustering). A useful approach to determine the optimal
+number of clusters is the silhouette method.
+The silhouette value, for each unit, is a measure of how similar a unit is to its own
+cluster (cohesion) compared to other clusters (separation).
+
+The R function fviz_nbclust() [factoextra package] provides a convenient solution to
+estimate the optimal number of clusters.
+
+```{r}
+library(cluster)
+library(factoextra)
+fviz_nbclust(studentsData, pam, method = "silhouette")+
+theme_classic()
+```
+We can see that the plot suggest us the number of clusters should be 2 from our dataset.
+
+
+```{r}
+pam.res <- pam(studentsData, 2)
+pam.res$medoids 
+```
+we can visualize the obtained cluster using the below plots.
+
+```{r}
+fviz_cluster(pam.res,
+palette = c("#00AFBB", "#FC4E07"), # color palette
+ellipse.type = "t", # Concentration ellipse
+repel = TRUE, # Avoid label overplotting (slow)
+ggtheme = theme_classic()
+)
+```
+```{r}
+pam.clus<- pam.res$clustering
+pairs(studentsData, gap=0, pch=pam.clus, col= c("#00AFBB", "#FC4E07")[pam.clus] ) 
+
+```
+The obove representation shows that there is very low tendency in the dataset for the clustering and we need to remove many attributes in order to find a suitable clustering in the dataset for the analysis or predictions.
+
+
+# Cluster Validation:
+
+In the cluster analysis with the dataset we applied the clustering techniques on our data set without checking the validation of the clustering. Cluster validation gives us insights about the dataset that is it valid for applying clustering or not? So, in other words it is the measering of the goodness of the cluster results.
+
+Before applying any clustering method on our data, it’s important to evaluate whether the data set contains meaningful clusters (i.e. non-random structures) or not. This process is defined as the assessing of clustering tendency or the feasibility of the cluster analysis.
+
+
+
+```{r}
+
+# Collected data from github repository
+x <- getURL("https://raw.githubusercontent.com/adeelahmedcsku/student-dataset/main/20-01-2020-data%20developed%20records%20students-changes%20in%20grading%20system%20-%20data%20developed%20records%20students.csv")
+studentsData <- read.csv(text = x)
+
+studentsData.alter<-data.frame(studentsData[,c(-1,-2,-3,-6,-7,-8,-13)])
+
+# Random data generated from the our data set
+student.alter.random_df <- apply(studentsData.alter, 2,
+function(x){runif(length(x), min(x), (max(x)))})
+student.alter.random_df <- as.data.frame(student.alter.random_df)
+# Standardize the data sets
+studentsData.alter.scaled <- scale(studentsData.alter)
+student.alter.random_df <- scale(student.alter.random_df)
+
+```
+
+As the data contain more than two variables, we need to reduce the dimensionality
+in order to plot a scatter plot. This can be done using principal component analysis
+(PCA) algorithm (R function: prcomp()). After performing PCA, we use the function
+fviz_pca_ind() [factoextra R package] to visualize the output.
+
+
+
+```{r}
+library("factoextra")
+# Plot faithful data set
+fviz_pca_ind(prcomp(studentsData.alter.scaled), title = "PCA - Student data",
+habillage = studentsData$Class, palette = "jco",
+geom = "point", ggtheme = theme_classic(),
+legend = "bottom")
+```
+
+
+```{r}
+# Plot the random df
+fviz_pca_ind(prcomp(student.alter.random_df), title = "PCA - Random data",
+geom = "point", ggtheme = theme_classic())
+```
+It can be seen from the graph that student data contains three real clusters while the random data plot has no meaningful clusters.
+
+# Cluster Tendency:
+
+In the previous sections where we computed the k-means algorithm and the hierarchical clustering impose a classification on the random uniformly distributed data set even if there are no meaningful clusters present in it. This is why, clustering tendency assessment methods should be used to evaluate the validity of clustering analysis. That is, whether a given data set contains meaningful clusters.
+
+
+So, lets check the cluster tendency in our selected dataset.
+
+We can assess if there are clusters from both a statistical point of view and from a graphical one,
+by means of, respectively, the Hopkins statistic and the VAT algorithm.
+
+## Hopkins statistic:
+
+Hopkins statistic on the dataset altered by removing the nominal variables.
+
+```{r}
+library(clustertend)
+hopkins(studentsData.alter.scaled, n = nrow(studentsData.alter.scaled)-1)
+
+```
+
+Hopkins statistics on the randomly generated data set.
+
+```{r}
+hopkins(student.alter.random_df, n = nrow(student.alter.random_df)-1)
+
+```
+It can be seen that the student data set which is altered and removed the categorical attrbutes is clusterable because the value of H = 0.19 which is closed to zero.
+While the random sample of the same data set is not clusterable because the value of the H=0.5.
+
+## VAT algorithm:
+
+
+
+```{r}
+fviz_dist(dist(studentsData.alter.scaled), show_labels = FALSE)+ labs(title = "Student data")
+fviz_dist(dist(student.alter.random_df), show_labels = FALSE)+ labs(title = "Random data")
+```
+The dissimilarity matrix image confirms that there is a cluster structure in the
+standardized Student data set but not in the random one.
+
+
+# Determining the optimal number of clusters:
+
+There are many ways to calculate the optimal numbers of clusters, like Elbow method,Silhouette method and gap statistics method.
+
+## Elbow method
+```{r}
+
+fviz_nbclust(studentsData.alter.scaled, kmeans, method = "wss") +
+geom_vline(xintercept = 4, linetype = 2)+
+labs(subtitle = "Elbow method")
+
+```
+
+## Silhouette method
+
+```{r}
+fviz_nbclust(studentsData.alter.scaled, kmeans, method = "silhouette")+
+labs(subtitle = "Silhouette method")
+
+```
+
+## Gap statistic
+
+
+```{r}
+# nboot = 50 to keep the function speedy.
+# recommended value: nboot= 500 for your analysis.
+# Use verbose = FALSE to hide computing progression.
+set.seed(123)
+fviz_nbclust(studentsData.alter.scaled, kmeans, nstart = 25, method = "gap_stat", nboot = 500)+
+labs(subtitle = "Gap statistic method")
+```
+
+
+
+- Elbow method: 4 clusters solution suggested
+- Silhouette method: 9 clusters solution suggested
+- Gap statistic method: 1 clusters solution suggested
+
+
+## NbClust Method:
+
+
+```{r}
+library("NbClust")
+
+ nb <- NbClust(studentsData.alter.scaled, distance = "euclidean", min.nc = 2, max.nc = 10, method = "kmeans")
+```
+
+The results of NbClust() can be graphically visualized using fviz nbclust() (in
+the factoextra package) as follows:
+```{r}
+library("factoextra")
+fviz_nbclust(nb)
+
+```
+
+# Clustering Validation Statistics:
+  
+The term cluster validation is used to design the procedure of evaluating the goodness of clustering algorithm results. Generally, clustering validation statistics can be categorized into 3 classes:   
+
+1. Internal cluster validation: Consider the insights of the cluster.
+2. External Cluster Validation: Consider the external provided class labels etc.
+3. Relative Cluster Validation: Consider the variation in the parameter values like no of clusters etc.
+
+The internal cluster validation allows us to estimate the optimal number of clusters and to select
+the appropriate clustering algorithm, by means of two indices: the Silhouette Width and the Dunn
+index.
+
+## Silhouette plot
+
+The silhouette coecient (Si) measures how similar an object i is to the other objects in its own cluster versus those in the neighbor cluster. 
+
+```{r}
+ km.res <- eclust(studentsData.alter.scaled, "kmeans", k = 3, nstart = 25, graph = FALSE)
+ fviz_silhouette(km.res, palette = "jco", ggtheme = theme_classic())
+```
+```{r}
+# Silhouette information
+silinfo <- km.res$silinfo
+ silinfo$avg.width 
+```
+The average silhouette width is 0.27. No cluster participate overall widths. Looking at the plot, we can see that in cluster 1 some of the units have a silhouette width higher than the average one and while some have negative silhouette width. While in cluster 2 there most of the units have a silhouette width lower than the average one; in cluster 3 almost half units have a high silhouette width,and some outlier as well with the negative silhouette width others a low one.  
+  
+  
+It can be seen that several samples, in cluster 1 and 3, have a negative silhouette coeffcient.
+This means that they are not in the right cluster. We can find the name of these samples and determine the clusters they are closer (neighbor cluster), as follow:
+
+```{r}
+# Silhouette width of observation
+sil <- km.res$silinfo$widths[, 1:3]
+# Objects with negative silhouette
+neg_sil_index <- which(sil[, 'sil_width'] < 0)
+sil[neg_sil_index, , drop = FALSE]
+```
+
+  There are some elements of cluster 1 which we should include in the cluster 2 and there are also some elements of the cluster 3 which we need to inculde in the cluster 2.
+  
+This is a further confirmation that the optimal number of clusters is 2, in fact, if we run the kmeans with K=2, the plot does not present any unit with a negative silhouette width:
+```{r}
+km.res <- eclust(studentsData.alter.scaled, "kmeans", k = 2, nstart = 25, graph = FALSE)
+fviz_silhouette(km.res, palette = "jco", ggtheme = theme_classic())
+  
+```
+
+## Dunn Index:
+
+```{r}
+library(fpc)
+# Statistics for k-means clustering
+km_stats <- cluster.stats(dist(studentsData.alter.scaled), km.res$cluster)
+# Dun index
+km_stats$dunn
+```
+The aim of the Dunn index is to identify sets of clusters that are compact, with a small variance
+between members of the cluster, and well separated. A higher Dunn index indicates better
+clustering, so it should be maximized.
+
+# Choosing the Best Clustering Algorithms
+
+## Internal measures:
+
+We can compare the multiple clustering method using the R library clValid in order to find out that which clustering algorithm suited best for our data.
+
+```{r}
+library(clValid)
+# Compute clValid
+clmethods <- c("hierarchical","kmeans","pam")
+intern <- clValid(studentsData.alter.scaled, nClust = 2:6,
+clMethods = clmethods, validation = "internal")
+# Summary
+summary(intern)
+```
+  
+  
+
+
+## Stability Measures:
+  
+  
+  
+  
+  
+  
+  
+  
+  

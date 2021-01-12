@@ -1,0 +1,6 @@
+"0","```r
+# Collected data from github repository
+x <- getURL(\"https://raw.githubusercontent.com/adeelahmedcsku/student-dataset/main/20-01-2020-data%20developed%20records%20students-changes%20in%20grading%20system%20-%20data%20developed%20records%20students.csv\")
+studentsData <- read.csv(text = x)
+
+```"

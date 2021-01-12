@@ -1,0 +1,11 @@
+"0","clmethods <- c(""hierarchical"",""kmeans"",""pam"")"
+"0","stab <- clValid(studentsData.alter.scaled, nClust = 2:6, clMethods = clmethods,validation = ""stability"")"
+"1","
+The number of items to be clustered is larger than 'maxitems'
+"
+"1","The memory and time required may be excessive, do you wish to continue?
+"
+"1","(y to continue, any other character to exit) "
+"0","y"
+"2","rownames for data not specified, using 1:nrow(data)"
+"0","optimalScores(stab)"

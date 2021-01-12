@@ -1,0 +1,4 @@
+"0","```r
+ pve = pca.var/sum(pca.var)
+ round(pve,3) *100
+```"

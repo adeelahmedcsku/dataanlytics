@@ -1,0 +1,268 @@
+---
+title: "Cluster Analysis"
+output: html_notebook
+---
+```{r}
+library(RCurl)
+
+```
+```{r}
+# Collected data from github repository
+x <- getURL("https://raw.githubusercontent.com/adeelahmedcsku/student-dataset/main/20-01-2020-data%20developed%20records%20students-changes%20in%20grading%20system%20-%20data%20developed%20records%20students.csv")
+studentsData <- read.csv(text = x)
+
+```
+
+```{r}
+studentsData$Gender =as.numeric(factor(studentsData$Gender))
+str(studentsData$Gender)
+```
+Factoring the program attribute:
+
+```{r}
+studentsData$Program =as.numeric(factor(studentsData$Program))
+str(studentsData$Program)
+```
+
+Factoring the Is.Research.Oriented attribute:
+
+```{r}
+studentsData$Is.Research.Oriented = as.numeric(factor(studentsData$Is.Research.Oriented))
+str(studentsData$Is.Research.Oriented)
+```
+
+Factoring the Student.Type attribute:
+
+```{r}
+studentsData$Student.Type = as.numeric(factor(studentsData$Student.Type))
+str(studentsData$Student.Type)
+```
+
+Factoring the Financial.Condition attribute:
+
+```{r}
+studentsData$Financial.Condition = as.numeric(factor(studentsData$Financial.Condition))
+str(studentsData$Financial.Condition)
+```
+
+Factoring the Class attribute:
+
+```{r}
+studentsData$Class = as.numeric(factor(studentsData$Class))
+str(studentsData$Class)
+```
+
+
+
+
+# Cluster Analysis
+
+Clustering is one of the important data mining methods for discovering knowledge
+in multidimensional data. The goal of clustering is to identify pattern or groups of
+similar objects within a data set of interest.
+In the literature, it is referred as “pattern recognition” or “unsupervised machine
+learning” - “unsupervised” because we are not guided by a priori ideas of which
+variables or samples belong in which clusters. “Learning” because the machine
+algorithm “learns” how to cluster.
+
+The Clustering involves several steps. The first step is to calculate the dissimilarity matrix amoung the cluster units.
+
+The value of distance measures is intimately related to the scale on which measurements are made. Therefore, variables are often scaled (i.e. standardized) before measuring the inter-observation dissimilarities.
+
+```{r}
+studentsData.scaled <- scale(studentsData)
+
+```
+
+The Euclidean distance of the dataset is show below.
+
+```{r}
+dist.eucl <- dist(studentsData.scaled, method = "euclidean")
+dist.eucl.matrix<-round(as.matrix(dist.eucl)[1:13, 1:13], 2)
+rownames(dist.eucl.matrix) <- c("G","B.Y","Pro","S.M","C.P","R.O","S.T","F.C","A.M","F.E.M","Total","CGPA","Class")
+colnames(dist.eucl.matrix) <- c("G","B.Y","Pro","S.M","C.P","R.O","S.T","F.C","A.M","F.E.M","Total","CGPA","Class")
+dist.eucl.matrix
+
+
+```
+The most dissimilarity we can see in the table is between Attendance Marks(A.M) and Research Oriented (R.O) which is 8.08. while the most similar is  class participation marks and research oriented attribute which 2.50.
+
+We can also try to compute the Manhattan distance:
+ 
+```{r}
+dist.man <- dist(studentsData.scaled, method = "manhattan")
+dist.man.matrix<-round(as.matrix(dist.man)[1:13, 1:13], 2)
+rownames(dist.man.matrix) <-c("G","B.Y","Pro","S.M","C.P","R.O","S.T","F.C","A.M","F.E.M","Total","CGPA","Class")
+colnames(dist.man.matrix)<-c("G","B.Y","Pro","S.M","C.P","R.O","S.T","F.C","A.M","F.E.M","Total","CGPA","Class")
+dist.man.matrix
+
+
+```
+
+The maximum distance is between Research Oriented and Attendance marks is maximum and minimum distance is between class participation and research oriented which is same as euclidean distance. So there is no difference in these two distance matrices we can say that there is no outlier in our dataset.
+
+We can do the same observations by looking at the graphical visualization of the distance matrix:
+
+```{r}
+library(factoextra)
+
+fviz_dist(dist.eucl)
+```
+The red represents high similarity and blue represents low dissimilarity.
+
+# Hierarchical clustering method
+
+Hierarchical clustering is a method of CA which seeks to build a hierarchy of clusters. Hierarchical clustering methods do not require the number of clusters K as an input (i.e., to be fixed in advance).
+
+Strategies for hierarchical clustering generally fall into two types:
+1. Agglomerative hierarchical clustering
+2. Divisive hierarchical clustering
+
+#Agglomerative hierarchical clustering
+
+## Using Euclidean Distance and Ward's Linkage Methods:
+
+```{r}
+res.hc <- hclust(d = dist.eucl, method = "ward.D2")
+fviz_dend(res.hc, cex = 0.5)
+
+```
+The height of the fusion, provided on the vertical axis, indicates the (dis)similarity/distance
+between two objects/clusters. The higher the height of the fusion, the less similar the
+objects are. This height is known as the cophenetic distance between the two objects.
+
+```{r}
+# Compute cophentic distance
+res.coph <- cophenetic(res.hc)
+```
+
+```{r}
+# Correlation between cophenetic distance and
+# the original distance
+cor(dist.eucl, res.coph)
+```
+
+
+
+```{r}
+grp <- cutree(res.hc, k = 4)
+ fviz_dend(res.hc, k = 4, cex = 0.5, k_colors = c("#1762b3", "#E7B800", "#FC4E07","#116300"), color_labels_by_k = TRUE,rect = TRUE)
+
+```
+The last cluster is bigger than the first two clusters
+
+```{r}
+table(grp)
+  
+```
+We can visualize the clustering results in the original space via the matrix of pairwise scatterplots:
+
+```{r}
+ pairs(studentsData, gap=0, pch=grp, col=c("#1762b3", "#E7B800", "#FC4E07","#116300")[grp])
+
+```
+
+
+
+
+
+
+
+
+
+## Using Euclidean Distance and Average Linkage Methods:
+
+```{r}
+res.hc <- hclust(d = dist.eucl, method = "average")
+fviz_dend(res.hc, cex = 0.5)
+
+```
+
+The height of the fusion, provided on the vertical axis, indicates the (dis)similarity/distance
+between two objects/clusters. The higher the height of the fusion, the less similar the
+objects are. This height is known as the cophenetic distance between the two objects.
+
+```{r}
+# Compute cophentic distance
+res.coph <- cophenetic(res.hc)
+```
+
+```{r}
+# Correlation between cophenetic distance and
+# the original distance
+cor(dist.eucl, res.coph)
+```
+
+The correlation value is 0.723 which is very good with compare to the previous WARD.D2 method.
+
+
+```{r}
+grp <- cutree(res.hc, k = 4)
+ fviz_dend(res.hc, k = 4, cex = 0.5, k_colors = c("#1762b3", "#E7B800", "#FC4E07","#116300"), color_labels_by_k = TRUE,rect = TRUE)
+
+```
+The last cluster is bigger than the first two clusters
+
+```{r}
+table(grp)
+  
+```
+We can visualize the clustering results in the original space via the matrix of pairwise scatterplots:
+
+```{r}
+ pairs(studentsData, gap=0, pch=grp, col=c("#1762b3", "#E7B800", "#FC4E07","#116300")[grp])
+
+```
+
+
+
+
+
+
+
+## Using Euclidean Distance and Single Linkage Methods:
+
+```{r}
+res.hc <- hclust(d = dist.eucl, method = "single")
+fviz_dend(res.hc, cex = 0.5)
+
+```
+
+The height of the fusion, provided on the vertical axis, indicates the (dis)similarity/distance
+between two objects/clusters. The higher the height of the fusion, the less similar the
+objects are. This height is known as the cophenetic distance between the two objects.
+
+```{r}
+# Compute cophentic distance
+res.coph <- cophenetic(res.hc)
+```
+
+```{r}
+# Correlation between cophenetic distance and
+# the original distance
+cor(dist.eucl, res.coph)
+```
+
+The correlation value is 0.54 which is very bad with compare to the previous linkage method method.This means that this clustering method does not preserve the true original distances between units.
+
+
+```{r}
+grp <- cutree(res.hc, k = 4)
+ fviz_dend(res.hc, k = 4, cex = 0.5, k_colors = c("#1762b3", "#E7B800", "#FC4E07","#116300"), color_labels_by_k = TRUE,rect = TRUE)
+
+```
+The last cluster is bigger than the first two clusters
+
+```{r}
+table(grp)
+  
+```
+We can visualize the clustering results in the original space via the matrix of pairwise scatterplots:
+
+```{r}
+ pairs(studentsData, gap=0, pch=grp, col=c("#1762b3", "#E7B800", "#FC4E07","#116300")[grp])
+
+```
+
+
+

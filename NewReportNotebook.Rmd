@@ -1,0 +1,2347 @@
+---
+title: "R Notebook"
+output:
+  word_document: default
+  html_notebook: default
+---
+
+---
+title: "R Notebook"
+output:
+  word_document: default
+  html_notebook: default
+  pdf_document: default
+---
+
+The below code, imports the RCurl library which is used to get the data from the online resources.
+```{r}
+library(RCurl)
+
+```
+
+We uses the getURL method of the imported library in order to download the required dataset. And then assigned it into the variable studentsData.
+
+```{r}
+# Collected data from github repository
+x <- getURL("https://raw.githubusercontent.com/adeelahmedcsku/student-dataset/main/20-01-2020-data%20developed%20records%20students-changes%20in%20grading%20system%20-%20data%20developed%20records%20students.csv")
+studentsData <- read.csv(text = x)
+
+```
+
+The preliminary analysis of the shows that there are 939 obervations and total of 12 variables using the **str()** command. 
+```{r}
+str(studentsData)
+```
+Each observation in the above dataset reflects the performance of a student for a random course in exam.  It is composed of the various attributes related to the exams performances. For instances, sessional marks, class participation marks, attendance marks, final exam marks and finally the class attribute which reflects the student grades.
+
+# Univariate Analysis
+
+In univariate analysis, We can see that the Gender,Program, Is.Research.Oriented, Student.Type,class and financial condition are the categorical attributes and need to convert into factors. Some attributes are discrete and integer and the attribute CGPA is contineous. The CGPA is our main attribute to order to analysis the data because its the overall performance of the students.
+
+Factoring the Gender attribute:
+
+```{r}
+studentsData$Gender = factor(studentsData$Gender)
+str(studentsData$Gender)
+```
+Factoring the program attribute:
+
+```{r}
+studentsData$Program = factor(studentsData$Program)
+str(studentsData$Program)
+```
+
+Factoring the Is.Research.Oriented attribute:
+
+```{r}
+studentsData$Is.Research.Oriented = factor(studentsData$Is.Research.Oriented)
+str(studentsData$Is.Research.Oriented)
+```
+
+Factoring the Student.Type attribute:
+
+```{r}
+studentsData$Student.Type = factor(studentsData$Student.Type)
+str(studentsData$Student.Type)
+```
+
+Factoring the Financial.Condition attribute:
+
+```{r}
+studentsData$Financial.Condition = factor(studentsData$Financial.Condition)
+str(studentsData$Financial.Condition)
+```
+
+Factoring the Class attribute:
+
+```{r}
+studentsData$Class = factor(studentsData$Class)
+str(studentsData$Class)
+```
+
+Now, the structure of the dataset is ready to study:
+
+```{r}
+str(studentsData)
+```
+
+Below command is used to see the summary of the dataset:
+
+```{r}
+summary(studentsData)
+```
+
+
+## Gender:
+
+The gender is the categorical variable of type Nominal. It consists of two possible values 'M' for Male and 'F' for female.
+
+```{r}
+table(studentsData$Gender)
+frequencyGender <- table(studentsData$Gender)
+
+```
+
+The percentage distribution of the dataset with respect to the gender can be calculated by multiply to 100.
+
+```{r}
+prop.table(frequencyGender) * 100
+```
+The above frequency clearly elaborate that the dataset is balanced and about 46% are female students and 54% are male students. The frequency in the percentages is shows in the below bar plot.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Gender)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Gender))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+
+
+## Batch Year:
+
+The Batch year is the numerical variable of type integer. It consists of two possible values '2018' and '2019'.
+
+```{r}
+table(studentsData$Batch.year)
+frequencyBatchyear <- table(studentsData$Batch.year)
+
+```
+
+The percentage distribution of the dataset with respect to the batch year can be calculated by multiply to 100.
+
+```{r}
+prop.table(frequencyBatchyear) * 100
+```
+The above frequency clearly elaborate that the dataset is not much balanced and about 43% are 2018 students and 57% are 2019 students. The frequency in the percentages is shows in the below bar plot.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Batch.year)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Gender))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+
+
+## Program:
+
+The program is the Categorical variable of type nominal. It consists of four possible values 'MS(CS)' ,  'MS(MS)', MS(ES) and MS(BA).
+
+```{r}
+table(studentsData$Program)
+frequencyProgram <- table(studentsData$Program)
+
+```
+
+The percentage distribution of the dataset with respect to the Program can be calculated using the below formula.
+```{r}
+prop.table(frequencyProgram) * 100
+```
+
+The above frequency clearly elaborate that the dataset is consiss of 32% Business Administration students, 21% are Computer Science students, 21% are Envoirmental Science students and 24 percent are Media Science students. The frequency in the percentages is shows in the below bar plot.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Program)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Program))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+## Is.Research.Oriented:
+
+
+The Is.Research.Oriented is the categorical variable of type Nominal. It consists of two possible values 'Yes' and 'No'.
+
+```{r}
+table(studentsData$Is.Research.Oriented)
+frequencyIsResearchOriented <- table(studentsData$Is.Research.Oriented)
+
+```
+
+The percentage distribution of the dataset with respect to the Reserch Oriented can be calculated by multiply to 100.
+
+```{r}
+prop.table(frequencyIsResearchOriented) * 100
+```
+
+The above frequency clearly elaborate that the dataset is balanced and about 49% are Not the research oriented students and 51% are research oriented students. The frequency in the percentages is shows in the below bar plot.
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Is.Research.Oriented)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Is.Research.Oriented))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+
+## Student.Type:
+
+The Student.Type is the categorical variable of type Nominal. It consists of two possible values 'Full-Time' and 'Part-Time'.
+
+```{r}
+table(studentsData$Student.Type)
+frequencyStudentType <- table(studentsData$Student.Type)
+
+```
+
+The percentage distribution of the dataset with respect to the student type can be calculated by multiply to 100.
+
+```{r}
+prop.table(frequencyStudentType) * 100
+```
+
+The above frequency clearly elaborate that the dataset is completly balanced and about 50 percent of both the students are present Full-Time and Part-Time. The frequency in the percentages is shows in the below bar plot.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Student.Type)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Student.Type))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+
+## Financial.Condition:
+
+The Financial.Condition is the categorical variable of type Nominal. It consists of three possible values 'Average', 'Bad' and 'Good'.
+
+```{r}
+
+table(studentsData$Financial.Condition)
+frequencyFinancialCondition <- table(studentsData$Financial.Condition)
+
+```
+
+The percentage distribution of the dataset with respect to the financial condition can be calculated by multiply to 100.
+
+```{r}
+prop.table(frequencyFinancialCondition) * 100
+```
+
+The above frequency clearly elaborate that the dataset is partially balanced and about 29 percent of students have Average financial condition, 38 percent of the students have Bad financial condition and 32 percent of the students have Good financial condition. The frequency in the percentages is shows in the below bar plot.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Financial.Condition)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Financial.Condition))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')+
+xlab('Financial Condition')
+
+```
+
+
+
+## Sessional Marks:
+
+The Sessional marks is the Numerical variable of type Integer. It contains the mid-semester exams marks of the students.
+The summary of the sessional mark attribute is given below:
+```{r}
+summary(studentsData$Sessional.Marks)
+
+```
+```{r}
+ boxplot(studentsData$Sessional.Marks)
+```
+The variance provides an estimate of how much the observed data deviate from the mean. The variance is computed as the average squared distance of the values with respect to the mean.
+
+```{r}
+var(studentsData$Sessional.Marks, na.rm=T)
+```
+We can see that the mean is greater than variance which indicates binomial distribution.
+
+```{r}
+sd(studentsData$Sessional.Marks, na.rm=T)
+
+```
+
+The standard deviation tells us something about the “shape” of the distribution. Let’s use aggregate to compute standard deviation of Age for passengers in the different classes.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Sessional.Marks, color=Gender)) +
+geom_density()
+```
+
+
+```{r}
+table(studentsData$Sessional.Marks)
+frequencySessionalMarks <- table(studentsData$Sessional.Marks)
+
+```
+
+The percentage distribution of the dataset with respect to the Program can be calculated using the below formula.
+```{r}
+prop.table(frequencySessionalMarks) * 100
+```
+
+The above frequency in represents the percentages of the sessional Marks in the dataset.
+
+
+
+We can check the index of the most frequent marks as follows:
+
+```{r}
+
+which.max(frequencySessionalMarks)
+
+```
+
+This returns the the position of the max (7) and the name of the maximum value 16. We can obtain the maximum value as follows:
+
+```{r}
+max(frequencySessionalMarks)
+```
+Similarly with the least frequent item:
+
+```{r}
+frequencySessionalMarks[which.min(frequencySessionalMarks)]
+
+```
+
+The frequency table is already telling us something about the sample:
+• The most frequent sessional mark is 16 ;
+• The least frequent sessional mark is 11 ;
+
+The sessional marks barplot with the percentages of the marks is given that:
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Sessional.Marks)) +
+geom_bar(aes(y=(..count..)/sum(..count..)))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+PMF of sessional marks is as:
+
+```{r}
+
+ggplot(studentsData, aes(x=Sessional.Marks, fill=Gender)) +
+geom_bar(aes(y=..prop..), position=position_dodge2(preserve="single"))
+
+```
+For CDF, We can compare the male and female samples by specifying a color=sex aesthetic:
+
+```{r}
+ggplot(studentsData, aes(x=Sessional.Marks,color=Gender)) +
+stat_ecdf() +
+ylab('CDF')
+```
+The density histogram is given below for the sessional marks with respect to the Gender.
+
+
+```{r}
+ggplot(studentsData, aes(x=Sessional.Marks, fill=Gender)) +
+geom_histogram(aes(y=..density.., ), bins=12, color='black', position = position_dodge2(preserve='single')) +
+scale_x_continuous(breaks=seq(min(studentsData$Sessional.Marks),max(studentsData$Sessional.Marks),length=12),
+labels = scales::number_format(accuracy = 0.01))+
+geom_density(aes(color=Gender), fill=NA)
+
+```
+Generalized Additive Models for Location, Scale and Shape (GAMLSS) were introduced by
+Rigby and Stasinopoulos (2001, 2005) and Akantziliotou et al. (2002) as a way of overcoming some of the limitations associated with Generalized Linear Models (GLM) and Generalized Additive Models (GAM) (Nelder and Wedderburn, 1972 and Hastie and Tibshirani, 1990, respectively) which are already part of the R CRAN packages. We install the packages of GAMLSS in R. 
+
+The GAMLSS is the package that is used to select the best model of the statiscal distribution fits to our data. In order to find the best fit model for our data i will keep including the knowlegde of this model library in this document.
+
+The below are some libraries of these packages that we need to include in our code.
+
+```{r}
+library(gamlss.dist)
+library(gamlss)
+library(gamlss.data)
+library(gamlss.add)
+library(gamlss.countKinf)
+library(gamlss.mx)
+```
+
+```{r}
+ dist.poison <- histDist(studentsData$Sessional.Marks, family=PO, nbins = 30, main="Poison distribution",xlab = "Sessional Marks")
+
+```
+```{r}
+dist.poison$aic
+dist.poison$sbc
+
+```
+
+
+```{r}
+Sessional.Marks<- studentsData$Sessional.Marks
+ dist.expo <- histDist(studentsData$Sessional.Marks, family=EXP, nbins = 30, main="Exponential distribution",xlab = "Sessional Marks")
+
+```
+
+```{r}
+ dist.gama <- histDist(studentsData$Sessional.Marks, family=GA, nbins = 30, main="Gamma distribution",xlab = "Sessional Marks")
+
+```
+
+```{r}
+
+dist.gaussian <- histDist(studentsData$Sessional.Marks, family=IG, nbins = 30, main="Gaussian distribution",xlab = "Sessional Marks")
+
+```
+
+```{r}
+
+dist.lognormal <- histDist(studentsData$Sessional.Marks, family=LOGNO, nbins = 30, main="Normal distribution",xlab = "Sessional Marks")
+
+```
+
+# ```{r}
+#  dist.weibull <- histDist(studentsData$Sessional.Marks, family=WEI, nbins = 30, main="Weibull distribution",xlab = "Sessional Marks")
+# 
+# ```
+
+```{r}
+ data.frame(row.names = c("Exponential", "Gamma", "Inverse Gaussian", "Log-Normal", "Poison"),
+ AIC=c(AIC(dist.expo), AIC(dist.gama), AIC(dist.gaussian), AIC(dist.lognormal), AIC(dist.poison)),
+ SBC=c(dist.expo$sbc, dist.gama$sbc, dist.gaussian$sbc, dist.lognormal$sbc, dist.poison$sbc)
+ )
+```
+
+The Akaike information criterion (AIC) is used to estimate the prediction error in the statistical model of the given dataset. It estimates the quiality of each model comparing to the other models.
+AIC estimates the relative amount of information lost by a given model: the less information a model loses, the higher the quality of that model.
+
+The Bayesian information criterion (BIC) or Schwarz information criterion (also SIC, SBC, SBIC) is a criterion for model selection among a finite set of models; the model with the lowest BIC is preferred. It is based, in part, on the likelihood function and it is closely related to the Akaike information criterion (AIC).
+
+In the above table the gamma distribution model is the best fit for our data due to the lowest values of the AIC and SBC.
+
+## Likelihood-ratio test
+
+In order to assess the goodness-of-fit, Likelihood-ratio test between the Exponential model (under the null
+hypotesis) and the Weibull model (under the alternative hypotesis) is computed.
+
+```{r}
+ LR.test(dist.expo,dist.gama)
+```
+The p-values is 0: the null model, i.e. the Exponential distribution, is rejected.
+
+## Mixture Model of Gamma:
+We can also fit mixture distributions, for example the Gamma ones:
+
+```{r}
+
+dist.gamma.mix <- gamlssMXfits(n = 5, Sessional.Marks~1, family = GA, K = 2,data = studentsData)
+
+```
+
+```{r}
+dist.gamma.mix$aic 
+dist.gamma.mix$sbc 
+```
+
+We can see that with the mixture of two Gamma distributions the AIC and BIC values have
+improved, as they are lower than those obtained with the single Gamma distribution: AIC is now
+equal to 5429.286, while the previous value was 5449.719; BIC is now 5453.51, which is lower
+than 5454.564	, which was the previous value.
+
+
+## Class.Participation
+
+The summary of the Class Participation marks attribute is given below:
+
+```{r}
+summary(studentsData$Class.Participation)
+
+```
+```{r}
+ boxplot(studentsData$Class.Participation)
+```
+The variance provides an estimate of how much the observed data deviate from the mean. The variance is computed as the average squared distance of the values with respect to the mean.
+
+```{r}
+var(studentsData$Class.Participation, na.rm=T)
+```
+We can see that the mean is greater than variance which indicates binomial distribution.
+
+```{r}
+sd(studentsData$Class.Participation, na.rm=T)
+
+```
+
+The standard deviation tells us something about the “shape” of the distribution. Let’s use aggregate to compute standard deviation of Age for passengers in the different classes.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Class.Participation, color=Gender)) +
+geom_density()
+```
+
+The class participation marks is the Numerical variable of type Integer. It contains the marks of the student who take part in the class presentation and answering the questions of the teacher.
+
+```{r}
+
+table(studentsData$Class.Participation)
+frequencyClassParticipation <- table(studentsData$Class.Participation)
+
+```
+
+
+The percentage distribution of the dataset with respect to the class participation marks can be calculated using the above formula.
+
+
+```{r}
+prop.table(frequencyClassParticipation) * 100
+```
+
+
+The above frequency in represents the percentages of the Class participation Marks in the dataset.
+
+We can check the index of the most frequent marks as follows:
+
+
+```{r}
+
+which.max(frequencyClassParticipation)
+
+```
+
+
+This returns the the position of the max (7) and the name of the maximum value 16. We can obtain the maximum value as follows:
+
+
+```{r}
+max(frequencyClassParticipation)
+```
+
+
+Similarly with the least frequent item:
+
+
+```{r}
+frequencyClassParticipation[which.min(frequencyClassParticipation)]
+
+```
+
+
+The frequency table is already telling us something about the sample:
+• The most frequent class participation marks is 7 i.e. very few students were able to perform well in order to take all class participation marks;
+• The least frequent sessional mark is 10 ;
+
+The bar plot for the frequencies is given that:
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Class.Participation,fill='Class.Participation')) +
+geom_bar()
+```
+
+
+The Class participation marks barplot with the percentages of the marks is given that:
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Class.Participation)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill='Class.Participation'))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+```
+PMF of Class participation marks is as:
+
+```{r}
+
+ggplot(studentsData, aes(x=Class.Participation, fill=Gender)) +
+geom_bar(aes(y=..prop..), position=position_dodge2(preserve="single"))
+
+```
+For CDF, We can compare the male and female samples by specifying a color=sex aesthetic:
+
+```{r}
+ggplot(studentsData, aes(x=Class.Participation,color=Gender)) +
+stat_ecdf() +
+ylab('CDF')
+```
+The density histogram is given below for the Class Participation marks with respect to the Gender.
+
+
+```{r}
+ggplot(studentsData, aes(x=Class.Participation, fill=Gender)) +
+geom_histogram(aes(y=..density.., ), bins=12, color='black', position = position_dodge2(preserve='single')) +
+scale_x_continuous(breaks=seq(min(studentsData$Class.Participation),max(studentsData$Class.Participation),length=12),
+labels = scales::number_format(accuracy = 0.01))+
+geom_density(aes(color=Gender), fill=NA)
+
+```
+
+Generalized Additive Models for Location, Scale and Shape (GAMLSS) analysis of different statistical models is given below:
+
+
+```{r}
+ dist.poison <- histDist(studentsData$Class.Participation, family=PO, nbins = 30, main="Poison distribution",xlab = "Class Participation")
+
+```
+```{r}
+dist.poison$aic
+dist.poison$sbc
+
+```
+
+
+```{r}
+ dist.expo <- histDist(studentsData$Class.Participation, family=EXP, nbins = 30, main="Exponential distribution",xlab = "Class Participation")
+
+```
+
+```{r}
+ dist.gama <- histDist(studentsData$Class.Participation, family=GA, nbins = 30, main="Gamma distribution",xlab = "Class Participation")
+
+```
+
+```{r}
+
+dist.gaussian <- histDist(studentsData$Class.Participation, family=IG, nbins = 30, main="Gaussian distribution",xlab = "Class.Participation")
+
+```
+
+```{r}
+
+dist.lognormal <- histDist(studentsData$Class.Participation, family=LOGNO, nbins = 30, main="Normal distribution",xlab = "Class Participation")
+
+```
+
+# ```{r}
+#  dist.weibull <- histDist(studentsData$Sessional.Marks, family=WEI, nbins = 30, main="Weibull distribution",xlab = "Sessional Marks")
+# 
+# ```
+
+```{r}
+ data.frame(row.names = c("Exponential", "Gamma", "Inverse Gaussian", "Log-Normal", "Poison"),
+ AIC=c(AIC(dist.expo), AIC(dist.gama), AIC(dist.gaussian), AIC(dist.lognormal), AIC(dist.poison)),
+ SBC=c(dist.expo$sbc, dist.gama$sbc, dist.gaussian$sbc, dist.lognormal$sbc, dist.poison$sbc)
+ )
+```
+
+
+In the above table the Poisson distribution model is the best fit for our data due to the lowest values of the AIC and SBC.
+
+## Likelihood-ratio test
+
+In order to assess the goodness-of-fit, Likelihood-ratio test between the Exponential model (under the null hypotesis) and the Poisson model (under the alternative hypothesis) is computed.
+
+```{r}
+ LR.test(dist.expo,dist.poison)
+```
+The p-values is 0: the null model, i.e. the Exponential distribution, is rejected.
+
+## Mixture Model of Gamma:
+We can also fit mixture distributions, for example the Gamma ones:
+
+```{r}
+
+dist.gamma.mix <- gamlssMXfits(n = 5, Class.Participation~1, family = GA, K = 2,data = studentsData)
+
+```
+
+```{r}
+dist.gamma.mix$aic 
+dist.gamma.mix$sbc 
+```
+
+We can see that with the mixture of two Gamma distributions the AIC and BIC values have
+improved, as they are lower than those obtained with the single Gamma distribution: AIC is now
+equal to 4025.565, while the previous value was 4326.303; SBC is now 4049.789, which is lower
+than 	4335.993	, which was the previous value. Even the mixed gamma function model is much better than the chosen Poisson Model.
+
+## Attendance.Marks
+
+
+The Attendance marks is the Numerical variable of type Integer. It contains the marks of the students according to their attendance in the class.
+
+
+```{r}
+summary(studentsData$Attendance.Marks)
+
+```
+```{r}
+ boxplot(studentsData$Attendance.Marks)
+```
+
+The variance provides an estimate of how much the observed data deviate from the mean. The variance is computed as the average squared distance of the values with respect to the mean.
+
+```{r}
+var(studentsData$Attendance.Marks, na.rm=T)
+```
+We can see that the mean is greater than variance which indicates binomial distribution.
+
+```{r}
+sd(studentsData$Attendance.Marks, na.rm=T)
+
+```
+
+The standard deviation tells us something about the “shape” of the distribution. Let’s use aggregate to compute standard deviation of Age for passengers in the different classes.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Attendance.Marks, color=Gender)) +
+geom_density()
+```
+
+The summary of the Attendance marks attribute is given below:
+
+```{r}
+
+table(studentsData$Attendance.Marks)
+frequencyAttendanceMarks <- table(studentsData$Attendance.Marks)
+
+```
+
+
+The percentage distribution of the dataset with respect to the Attendance marks can be calculated using the above formula.
+
+
+```{r}
+prop.table(frequencyAttendanceMarks) * 100
+```
+
+
+The above frequency in represents the percentages of the attendance Marks in the dataset.
+
+We can check the index of the most frequent marks as follows:
+
+
+```{r}
+
+which.max(frequencyAttendanceMarks)
+
+```
+
+
+This returns the the position of the max (5) and the name of the maximum value 7. We can obtain the maximum number of times a number repeats is as follows:
+
+
+```{r}
+max(frequencyAttendanceMarks)
+```
+
+Similarly with the least frequent item:
+
+
+```{r}
+frequencyAttendanceMarks[which.min(frequencyAttendanceMarks)]
+
+```
+
+
+The frequency table is already telling us something about the sample:
+• The most frequent attendacne marks is 7 it implies that most of the students took average marks in the attendance;
+• The least frequent attendance marks is 1 ;
+
+The bar plot for the frequencies is given that:
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Attendance.Marks,fill='Attendance.Marks')) +
+geom_bar()
+```
+
+
+The Attendance marks barplot with the percentages of the marks is given that:
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Attendance.Marks)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill='Attendance.Marks'))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')+
+xlab('Attendance Marks')
+
+```
+
+PMF of Attendance marks is as:
+
+```{r}
+
+ggplot(studentsData, aes(x=Attendance.Marks, fill=Gender)) +
+geom_bar(aes(y=..prop..), position=position_dodge2(preserve="single"))
+
+```
+
+For CDF, We can compare the male and female samples by specifying a color=sex aesthetic:
+
+```{r}
+ggplot(studentsData, aes(x=Attendance.Marks,color=Gender)) +
+stat_ecdf() +
+ylab('CDF')
+```
+
+The density histogram is given below for the Attendance marks with respect to the Gender.
+
+```{r}
+ggplot(studentsData, aes(x=Attendance.Marks, fill=Gender)) +
+geom_histogram(aes(y=..density.., ), bins=12, color='black', position = position_dodge2(preserve='single')) +
+scale_x_continuous(breaks=seq(min(studentsData$Attendance.Marks),max(studentsData$Attendance.Marks),length=12),
+labels = scales::number_format(accuracy = 0.01))+
+geom_density(aes(color=Gender), fill=NA)
+
+```
+
+Generalized Additive Models for Location, Scale and Shape (GAMLSS) analysis of different statistical models is given below:
+
+
+```{r}
+ dist.poison <- histDist(studentsData$Attendance.Marks, family=PO, nbins = 30, main="Poison distribution",xlab = "Attendance Marks")
+
+```
+```{r}
+dist.poison$aic
+dist.poison$sbc
+
+```
+
+
+```{r}
+ dist.expo <- histDist(studentsData$Attendance.Marks, family=EXP, nbins = 30, main="Exponential distribution",xlab = "Attendance Marks")
+
+```
+
+```{r}
+ dist.gama <- histDist(studentsData$Attendance.Marks, family=GA, nbins = 30, main="Gamma distribution",xlab = "Attendance Marks")
+
+```
+
+```{r}
+
+dist.gaussian <- histDist(studentsData$Attendance.Marks, family=IG, nbins = 30, main="Gaussian distribution",xlab = "Attendance Marks")
+
+```
+
+```{r}
+
+dist.lognormal <- histDist(studentsData$Attendance.Marks, family=LOGNO, nbins = 30, main="Normal distribution",xlab = "Attendance Marks")
+
+```
+
+# ```{r}
+#  dist.weibull <- histDist(studentsData$Sessional.Marks, family=WEI, nbins = 30, main="Weibull distribution",xlab = "Sessional Marks")
+# 
+# ```
+
+```{r}
+ data.frame(row.names = c("Exponential", "Gamma", "Inverse Gaussian", "Log-Normal", "Poison"),
+ AIC=c(AIC(dist.expo), AIC(dist.gama), AIC(dist.gaussian), AIC(dist.lognormal), AIC(dist.poison)),
+ SBC=c(dist.expo$sbc, dist.gama$sbc, dist.gaussian$sbc, dist.lognormal$sbc, dist.poison$sbc)
+ )
+```
+
+
+In the above table the Gamma distribution model is the best fit for our data due to the lowest values of the AIC and SBC.
+
+## Likelihood-ratio test
+
+In order to assess the goodness-of-fit, Likelihood-ratio test between the Exponential model (under the null hypotesis) and the gamma model (under the alternative hypothesis) is computed.
+
+```{r}
+ LR.test(dist.expo,dist.gama)
+```
+The p-values is 0: the null model, i.e. the Exponential distribution, is rejected.
+
+
+## Final.Exam.Marks
+
+The Final Exam marks is the Numerical variable of type Integer. It contains the marks of the students according to their performance in the semester exam.
+
+```{r}
+summary(studentsData$Final.Exam.Marks)
+
+```
+```{r}
+ boxplot(studentsData$Final.Exam.Marks)
+```
+
+
+
+```{r}
+
+table(studentsData$Final.Exam.Marks)
+frequencyFinalExamMarks <- table(studentsData$Final.Exam.Marks)
+
+```
+
+
+The percentage distribution of the dataset with respect to the Final Exams marks can be calculated using the above formula.
+
+
+```{r}
+prop.table(frequencyFinalExamMarks) * 100
+```
+
+
+The above frequency in represents the percentages of the Final Exam Marks in the dataset.
+
+We can check the index of the most frequent marks as follows:
+
+
+```{r}
+
+which.max(frequencyFinalExamMarks)
+
+```
+
+
+This returns the the position of the max (30) and the name of the maximum value 39. We can obtain the maximum number of times a number repeats is as follows:
+
+
+```{r}
+max(frequencyFinalExamMarks)
+```
+
+Similarly with the least frequent item:
+
+
+```{r}
+frequencyFinalExamMarks[which.min(frequencyFinalExamMarks)]
+
+```
+
+
+The frequency table is already telling us something about the sample:
+• The most frequent Final Exams marks is 39 it implies that most of the students performs above average marks in the Final Exams Marks;
+• The least frequent Final Exam marks is 6 ;
+
+The bar plot for the frequencies is given that:
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Final.Exam.Marks,fill='Final.Exam.Marks')) +
+geom_bar()
+```
+
+
+The Final Exam Marks barplot with the percentages of the marks is given that:
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Final.Exam.Marks)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill='Final.Exam.Marks'))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')+
+xlab('Final.Exam.Marks')
+
+```
+PMF of Final Exam marks is as:
+
+```{r}
+
+ggplot(studentsData, aes(x=Final.Exam.Marks, fill=Gender)) +
+geom_bar(aes(y=..prop..), position=position_dodge2(preserve="single"))
+
+```
+
+For CDF, We can compare the male and female samples by specifying a color=sex aesthetic:
+
+```{r}
+ggplot(studentsData, aes(x=Final.Exam.Marks,color=Gender)) +
+stat_ecdf() +
+ylab('CDF')
+```
+
+The density histogram is given below for the Final Exam marks with respect to the Gender.
+
+```{r}
+ggplot(studentsData, aes(x=Final.Exam.Marks, fill=Gender)) +
+geom_histogram(aes(y=..density.., ), bins=12, color='black', position = position_dodge2(preserve='single')) +
+scale_x_continuous(breaks=seq(min(studentsData$Final.Exam.Marks),max(studentsData$Final.Exam.Marks),length=12),
+labels = scales::number_format(accuracy = 0.01))+
+geom_density(aes(color=Gender), fill=NA)
+
+```
+
+Generalized Additive Models for Location, Scale and Shape (GAMLSS) analysis of different statistical models is given below:
+
+
+```{r}
+ dist.poison <- histDist(studentsData$Final.Exam.Marks, family=PO, nbins = 30, main="Poison distribution",xlab = "Final Exam Marks")
+
+```
+```{r}
+dist.poison$aic
+dist.poison$sbc
+
+```
+
+
+```{r}
+ dist.expo <- histDist(studentsData$Final.Exam.Marks, family=EXP, nbins = 30, main="Exponential distribution",xlab = "Final Exam Marks")
+
+```
+
+```{r}
+ dist.gama <- histDist(studentsData$Final.Exam.Marks, family=GA, nbins = 30, main="Gamma distribution",xlab = "Final Exam Marks")
+
+```
+
+```{r}
+
+dist.gaussian <- histDist(studentsData$Final.Exam.Marks, family=IG, nbins = 30, main="Gaussian distribution",xlab = "Final Exam Marks")
+
+```
+
+```{r}
+
+dist.lognormal <- histDist(studentsData$Final.Exam.Marks, family=LOGNO, nbins = 30, main="Normal distribution",xlab = "Final Exam Marks")
+
+```
+
+# ```{r}
+#  dist.weibull <- histDist(studentsData$Sessional.Marks, family=WEI, nbins = 30, main="Weibull distribution",xlab = "Sessional Marks")
+# 
+# ```
+
+```{r}
+ data.frame(row.names = c("Exponential", "Gamma", "Inverse Gaussian", "Log-Normal", "Poison"),
+ AIC=c(AIC(dist.expo), AIC(dist.gama), AIC(dist.gaussian), AIC(dist.lognormal), AIC(dist.poison)),
+ SBC=c(dist.expo$sbc, dist.gama$sbc, dist.gaussian$sbc, dist.lognormal$sbc, dist.poison$sbc)
+ )
+```
+
+
+In the above table the Gamma distribution model is the best fit for our data due to the lowest values of the AIC and SBC.
+
+## Likelihood-ratio test
+
+In order to assess the goodness-of-fit, Likelihood-ratio test between the Exponential model (under the null hypotesis) and the gamma model (under the alternative hypothesis) is computed.
+
+```{r}
+ LR.test(dist.expo,dist.gama)
+```
+The p-values is 0: the null model, i.e. the Exponential distribution, is rejected.
+
+## Mixture Model of Gamma:
+We can also fit mixture distributions, for example the Gamma ones:
+
+```{r}
+
+dist.gamma.mix <- gamlssMXfits(n = 5, Final.Exam.Marks~1, family = GA, K = 2,data = studentsData)
+
+```
+
+```{r}
+dist.gamma.mix$aic 
+dist.gamma.mix$sbc 
+```
+
+We can see that with the mixture of two Gamma distributions the AIC and BIC values have
+improved, as they are lower than those obtained with the single Gamma distribution: AIC is now
+equal to 6585.734, while the previous value was 6706.484; SBC is now 6609.958, which is lower
+than 	6716.174	, which was the previous value. Even the mixed gamma function model is much better than the chosen Poisson Model.
+
+
+## Total
+
+The Total marks is the Numerical variable of type Integer. It is the sum of the total marks obtained on the basis of sessional, class participation and attendance marks.
+
+```{r}
+summary(studentsData$Total)
+
+```
+```{r}
+ boxplot(studentsData$Total)
+```
+The frequencies of the Total marks are given below:
+
+```{r}
+
+table(studentsData$Total)
+frequencyTotal <- table(studentsData$Total)
+
+```
+
+
+The percentage distribution of the dataset with respect to the Total marks can be calculated using the above formula.
+
+
+```{r}
+prop.table(frequencyTotal) * 100
+```
+
+
+The above frequency in represents the percentages of the Total Exam Marks in the dataset.
+
+We can check the index of the most frequent marks as follows:
+
+
+```{r}
+
+which.max(frequencyTotal)
+
+```
+
+
+This returns the the position of the max (32) and the name of the maximum value 70. We can obtain the maximum number of times a number repeats is as follows:
+
+
+```{r}
+max(frequencyTotal)
+```
+
+Similarly with the least frequent item:
+
+
+```{r}
+frequencyTotal[which.min(frequencyTotal)]
+
+```
+
+The frequency table is already telling us something about the sample:
+• The most frequent  Total marks is 70 it implies that most of the students performs above average marks as total;
+• The least frequent Final Exam marks is 30 ;
+
+The bar plot for the frequencies is given that:
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Total,fill='Total')) +
+geom_bar()
+```
+
+
+The Total marks barplot with the percentages of the marks is given that:
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Total)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill='Total'))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')+
+xlab('Total Marks')
+
+```
+PMF of Total marks is as:
+
+```{r}
+
+ggplot(studentsData, aes(x=Total, fill=Gender)) +
+geom_bar(aes(y=..prop..), position=position_dodge2(preserve="single"))
+
+```
+
+For CDF, We can compare the male and female samples by specifying a color=sex aesthetic:
+
+```{r}
+ggplot(studentsData, aes(x=Total,color=Gender)) +
+stat_ecdf() +
+ylab('CDF')
+```
+
+The density histogram is given below for the Total marks with respect to the Gender.
+
+```{r}
+ggplot(studentsData, aes(x=Total, fill=Gender)) +
+geom_histogram(aes(y=..density.., ), bins=12, color='black', position = position_dodge2(preserve='single')) +
+scale_x_continuous(breaks=seq(min(studentsData$Total),max(studentsData$Total),length=12),
+labels = scales::number_format(accuracy = 0.01))+
+geom_density(aes(color=Gender), fill=NA)
+
+```
+
+Generalized Additive Models for Location, Scale and Shape (GAMLSS) analysis of different statistical models is given below:
+
+
+```{r}
+ dist.poison <- histDist(studentsData$Total, family=PO, nbins = 30, main="Poison distribution",xlab = "Total Marks")
+
+```
+```{r}
+dist.poison$aic
+dist.poison$sbc
+
+```
+
+
+```{r}
+ dist.expo <- histDist(studentsData$Total, family=EXP, nbins = 30, main="Exponential distribution",xlab = "Total Marks")
+
+```
+
+```{r}
+ dist.gama <- histDist(studentsData$Total, family=GA, nbins = 30, main="Gamma distribution",xlab = "Total Marks")
+
+```
+
+```{r}
+
+dist.gaussian <- histDist(studentsData$Total, family=IG, nbins = 30, main="Gaussian distribution",xlab = "Total Marks")
+
+```
+
+```{r}
+
+dist.lognormal <- histDist(studentsData$Total, family=LOGNO, nbins = 30, main="Normal distribution",xlab = "Total Marks")
+
+```
+
+# ```{r}
+#  dist.weibull <- histDist(studentsData$Sessional.Marks, family=WEI, nbins = 30, main="Weibull distribution",xlab = "Sessional Marks")
+# 
+# ```
+
+```{r}
+ data.frame(row.names = c("Exponential", "Gamma", "Inverse Gaussian", "Log-Normal", "Poison"),
+ AIC=c(AIC(dist.expo), AIC(dist.gama), AIC(dist.gaussian), AIC(dist.lognormal), AIC(dist.poison)),
+ SBC=c(dist.expo$sbc, dist.gama$sbc, dist.gaussian$sbc, dist.lognormal$sbc, dist.poison$sbc)
+ )
+```
+
+
+In the above table the Gamma distribution model is the best fit for our data due to the lowest values of the AIC and SBC.
+
+## Likelihood-ratio test
+
+In order to assess the goodness-of-fit, Likelihood-ratio test between the Gaussian model (under the null hypothesis) and the gamma model (under the alternative hypothesis) is computed.
+
+```{r}
+ LR.test(dist.gaussian,dist.gama)
+```
+The p-values is 0: the null model, i.e. the Gaussian distribution, is rejected.
+
+## Mixture Model of Gamma:
+We can also fit mixture distributions, for example the Gamma ones:
+
+```{r}
+
+dist.gamma.mix <- gamlssMXfits(n = 5, Total~1, family = GA, K = 2,data = studentsData)
+
+```
+
+```{r}
+dist.gamma.mix$aic 
+dist.gamma.mix$sbc 
+```
+
+We can see that with the mixture of two Gamma distributions the AIC and BIC values have
+improved, as they are lower than those obtained with the single Gamma distribution: AIC is now
+equal to 7099.079, while the previous value was 7337.966; SBC is now 7123.303, which is lower
+than 	7347.656	, which was the previous value. Even the mixed gamma function model is much better than the chosen Poisson Model.
+
+
+## Class:
+
+The Class is the categorical variable of type Nominal. It consists of seven possible values 'A+','A','B+','B','C','D' and 'F' .
+
+```{r}
+summary(studentsData$Class)
+
+```
+
+The frequencies are given below:
+```{r}
+table(studentsData$Class)
+frequencyClass <- table(studentsData$Class)
+
+```
+
+The percentage distribution of the dataset with respect to the Class can be calculated by multiply to 100.
+
+```{r}
+prop.table(frequencyClass) * 100
+```
+
+The above frequency clearly elaborate that the dataset is skewed towards the obove average performances and about 37 percent of students performances is A. The frequency in the percentages is shows in the below bar plot.
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=Class)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill=Class))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')
+
+
+```
+
+## CGPA
+
+The CGPA is the Numerical variable of type decimal.It is calculated with the formula mentioned in the table 1 of this report.
+
+```{r}
+summary(studentsData$CGPA)
+```
+
+```{r}
+ boxplot(studentsData$CGPA)
+```
+
+The frequencies of the CGPA are given below:
+
+```{r}
+
+table(studentsData$CGPA)
+frequencyTotal <- table(studentsData$CGPA)
+
+```
+
+
+The percentage distribution of the dataset with respect to the Total marks can be calculated using the above formula.
+
+
+```{r}
+prop.table(frequencyTotal) * 100
+```
+
+
+The above frequency in represents the percentages of the CGPA in the dataset.
+
+We can check the index of the most frequent marks as follows:
+
+
+```{r}
+
+which.max(frequencyTotal)
+
+```
+
+
+This returns the the position of the max (32) and the name of the maximum value 70. We can obtain the maximum number of times a number repeats is as follows:
+
+
+```{r}
+max(frequencyTotal)
+```
+
+Similarly with the least frequent item:
+
+
+```{r}
+frequencyTotal[which.min(frequencyTotal)]
+
+```
+
+The frequency table is already telling us something about the sample:
+• The most frequent  CGPA is 3.88 it implies that most of the students performs above average marks as total;
+• The least frequent Final Exam marks is 1.744 ;
+
+The bar plot for the frequencies is given that:
+
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=CGPA,fill='CGPA')) +
+geom_bar()
+```
+
+
+The CGPA barplot with the percentages of the marks is given that:
+
+```{r}
+library(ggplot2)
+ggplot(studentsData, aes(x=CGPA)) +
+geom_bar(aes(y=(..count..)/sum(..count..),fill='CGPA'))+
+scale_y_continuous(labels=scales::percent) +
+ylab('percentage')+
+xlab('CGPA')
+
+```
+PMF of CGPA is as:
+
+```{r}
+
+ggplot(studentsData, aes(x=CGPA, fill=Gender)) +
+geom_bar(aes(y=..prop..), position=position_dodge2(preserve="single"))
+
+```
+
+For CDF, We can compare the male and female samples by specifying a color=sex aesthetic:
+
+```{r}
+ggplot(studentsData, aes(x=CGPA,color=Gender)) +
+stat_ecdf() +
+ylab('CDF')
+```
+
+The density histogram is given below for the  CGPA with respect to the Gender.
+
+```{r}
+ggplot(studentsData, aes(x=CGPA, fill=Gender)) +
+geom_histogram(aes(y=..density.., ), bins=12, color='black', position = position_dodge2(preserve='single')) +
+scale_x_continuous(breaks=seq(min(studentsData$CGPA),max(studentsData$CGPA),length=12),
+labels = scales::number_format(accuracy = 0.01))+
+geom_density(aes(color=Gender), fill=NA)
+
+```
+
+Generalized Additive Models for Location, Scale and Shape (GAMLSS) analysis of different statistical models is given below:
+
+
+
+
+```{r}
+ dist.expo <- histDist(studentsData$CGPA, family=EXP, nbins = 30, main="Exponential distribution",xlab = "CGPA")
+
+```
+
+```{r}
+ dist.gama <- histDist(studentsData$CGPA, family=GA, nbins = 30, main="Gamma distribution",xlab = "CGPA")
+
+```
+
+```{r}
+
+dist.gaussian <- histDist(studentsData$CGPA, family=IG, nbins = 30, main="Gaussian distribution",xlab = "CGPA")
+
+```
+
+```{r}
+
+dist.lognormal <- histDist(studentsData$CGPA, family=LOGNO, nbins = 30, main="Normal distribution",xlab = "CGPA")
+
+```
+
+```{r}
+dist.weibull <- histDist(studentsData$CGPA, family=WEI, nbins = 30, main="Weibull distribution",xlab = "CGPA")
+ 
+```
+
+ 
+```{r}
+ data.frame(row.names = c("Exponential", "Gamma", "Inverse Gaussian", "Log-Normal", "Weibull"),
+ AIC=c(AIC(dist.expo), AIC(dist.gama), AIC(dist.gaussian), AIC(dist.lognormal), AIC(dist.weibull)),
+ SBC=c(dist.expo$sbc, dist.gama$sbc, dist.gaussian$sbc, dist.lognormal$sbc, dist.weibull$sbc)
+ )
+```
+
+
+In the above table the Weibull distribution model is the best fit for our data due to the lowest values of the AIC and SBC.
+
+## Likelihood-ratio test
+
+In order to assess the goodness-of-fit, Likelihood-ratio test between the gamma model (under the null hypothesis) and the weibull model (under the alternative hypothesis) is computed.
+
+```{r}
+ LR.test(dist.gama,dist.weibull)
+```
+The p-values is 0: the null model, i.e. the Gamma distribution, is rejected.
+
+## Mixture Model of Gamma:
+We can also fit mixture distributions, for example the Gamma ones:
+
+```{r}
+
+dist.gamma.mix <- gamlssMXfits(n = 5, CGPA~1, family = GA, K = 2,data = studentsData)
+
+```
+
+```{r}
+dist.gamma.mix$aic 
+dist.gamma.mix$sbc 
+```
+
+We can see that with the mixture of two Gamma distributions the AIC and BIC values have
+improved, as they are lower than those obtained with the single Gamma distribution: AIC is now
+equal to 1156.329, while the previous value was 1789.262; SBC is now 1180.553, which is lower
+than 	1798.951, which was the previous value. Even the mixed gamma function model is much better than the chosen Weibull Model.
+
+# Priciple Component Analysis:
+
+Principal component analysis (PCA) allows us to summarize and to visualize the information in a data set containing statistical units described by multiple correlated quantitative variables. Each variable could be considered as a different dimension.
+
+PCA is used to extract the important information from a multivariate data set and to
+express this information as a set of few new variables called principal components
+(PCs). These new variables correspond to a linear combination of the originals. The
+number of PCs is less than or equal to the number of original variables.
+
+Before extracting the PCAs first we need to analysis the correlation between the numerical attributes.
+```{r}
+library(GGally)
+studentsData_PCA<-data.frame(studentsData[,c(-1,-2,-3,-6,-7,-8,-13)])
+
+ggpairs(studentsData_PCA)
+```
+The plot above shows:
+
+All scatterplots in the bottom part;
+Density estimates of the univariate samples on the diagonal;
+Pearson Correlation coefficients in the upper part;
+
+The stars next to the correlation values indicate whether the correlation is significant. In particular:
+One star means that the p-value is in the range  [0.01,0.05];
+Two stars mean that the p-value is in the range [0.001,0.01];
+Three stars mean that the p-value is in the range[0,0.001];
+
+Hence, we need at least one star to say that the observed correlation is significant.
+
+From the analysis of the plot above, we can see that the strongest correlation is between Sessional Marks and Total Marks; and also with the final exam marks and total marks while there is a moderate correlation between others variables. While the corelation between class participation marks and final exam marks have no significance corelation.
+
+If we consider the financial condition of the students then the below plot shows that:
+
+```{r}
+ggpairs(studentsData, #dataset
+        columns = c(4,5,9,10,11,12), 
+        aes(color=Financial.Condition)) #color points by species
+```
+Lets throw the updated, numeric data only dataset into the pca function, prcomp.
+Here, we used the scaling which means to standardize the variance across variables.
+
+```{r}
+pca <- prcomp(studentsData_PCA, center = TRUE,scale. = TRUE)
+
+```
+
+As, the PCA goal is to reduce the dimension and remove those PCs which have less meaningful variance.
+```{r}
+summary(pca)
+
+```
+```{r}
+pca$rotation[, 1:6]
+```
+
+
+We have to see the proportion of variance in order to reduced the dimension of the PCs.
+It is clearly from the above table that we can consider the first four principle components to work with because they have some significant variance proportions. 
+
+We can use the biplot to represent at the same time original variables, principal components and
+the sample units (PC scores):
+
+```{r}
+biplot(pca, scale=0)
+```
+From the above plot we can see that there is the high correlation between Total, Final exam marks, attendance marks and Sessional Marks.
+
+
+
+But, There are several criteria to do so. These are all heuristic rules rather than rigorous methodologies. The reason is that PCA is completely distribution free. We can choose PCs based on:
+
+
+
+Kaiser’s rule: omit the PCs containing less information than the mean information per PC;
+
+
+```{r}
+pca.var = (pca$sdev)^2
+round(pca.var,3)
+
+```
+
+The rule suggests retaining the principal components with variance greater than 1, reason
+why we can retain the first 2 PCs.
+
+cumulative proportion of variance explained: extract the first  PCs which are able to
+explain a substantial proportion of variance explained;
+
+```{r}
+ pve = pca.var/sum(pca.var)
+ round(pve,3) *100
+```
+According to the CPVE we have to retain as many PCs as needed to explain at least the 80%
+of the total variance, hence we have to retain the first 4 PCs.
+
+scree plot: retain as many components as until a significant jump on the scree-plot appears;
+
+```{r}
+
+screeplot(pca, npcs = length(pca$sdev), type = "lines", main = "Scree Plot for PCA")
+
+```
+
+
+
+```{r}
+
+ plot(cumsum(pve), xlab="Principal Component", ylab="Cumulative Proportion of Variance Explained",ylim=c(0,1),type='b', main= "Cumulative Scree Plot")
+
+```
+
+## PCA result
+The cumulative PVE rule suggests retaining the first Four principal components, the Kaiser’s rule suggest retaining the first two principal components while the Scree plot  provide a much clear result. The reduction from d=6 original variables to 4 PCs.
+
+
+---
+output:
+  word_document: default
+  html_document: default
+---
+# ---
+# title: "Cluster Analysis"
+# output:
+#   word_document: default
+#   html_notebook: default
+# ---
+# ```{r}
+# library(RCurl)
+# 
+# ```
+# ```{r}
+# # Collected data from github repository
+# x <- getURL("https://raw.githubusercontent.com/adeelahmedcsku/student-dataset/main/20-01-2020-data%20developed%20records%20students-changes%20in%20grading%20system%20-%20data%20developed%20records%20students.csv")
+# studentsData <- read.csv(text = x)
+# 
+# ```
+# 
+# ```{r}
+# studentsData$Gender =as.numeric(factor(studentsData$Gender))
+# str(studentsData$Gender)
+# ```
+# Factoring the program attribute:
+# 
+# ```{r}
+# studentsData$Program =as.numeric(factor(studentsData$Program))
+# str(studentsData$Program)
+# ```
+# 
+# Factoring the Is.Research.Oriented attribute:
+# 
+# ```{r}
+# studentsData$Is.Research.Oriented = as.numeric(factor(studentsData$Is.Research.Oriented))
+# str(studentsData$Is.Research.Oriented)
+# ```
+# 
+# Factoring the Student.Type attribute:
+# 
+# ```{r}
+# studentsData$Student.Type = as.numeric(factor(studentsData$Student.Type))
+# str(studentsData$Student.Type)
+# ```
+# 
+# Factoring the Financial.Condition attribute:
+# 
+# ```{r}
+# studentsData$Financial.Condition = as.numeric(factor(studentsData$Financial.Condition))
+# str(studentsData$Financial.Condition)
+# ```
+# 
+# Factoring the Class attribute:
+# 
+# ```{r}
+# studentsData$Class = as.numeric(factor(studentsData$Class))
+# str(studentsData$Class)
+# ```
+# 
+# 
+# 
+# 
+# # Cluster Analysis
+# 
+# Clustering is one of the important data mining methods for discovering knowledge
+# in multidimensional data. The goal of clustering is to identify pattern or groups of
+# similar objects within a data set of interest.
+# In the literature, it is referred as “pattern recognition” or “unsupervised machine
+# learning” - “unsupervised” because we are not guided by a priori ideas of which
+# variables or samples belong in which clusters. “Learning” because the machine
+# algorithm “learns” how to cluster.
+# 
+# The Clustering involves several steps. The first step is to calculate the dissimilarity matrix amoung the cluster units.
+# 
+# The value of distance measures is intimately related to the scale on which measurements are made. Therefore, variables are often scaled (i.e. standardized) before measuring the inter-observation dissimilarities.
+# 
+# ```{r}
+# studentsData.scaled <- scale(studentsData)
+# 
+# ```
+# 
+# The Euclidean distance of the dataset is show below.
+# 
+# ```{r}
+# dist.eucl <- dist(studentsData.scaled, method = "euclidean")
+# dist.eucl.matrix<-round(as.matrix(dist.eucl)[1:13, 1:13], 2)
+# rownames(dist.eucl.matrix) <- c("G","B.Y","Pro","S.M","C.P","R.O","S.T","F.C","A.M","F.E.M","Total","CGPA","Class")
+# colnames(dist.eucl.matrix) <- c("G","B.Y","Pro","S.M","C.P","R.O","S.T","F.C","A.M","F.E.M","Total","CGPA","Class")
+# dist.eucl.matrix
+# 
+# 
+# ```
+# The most dissimilarity we can see in the table is between Attendance Marks(A.M) and Research Oriented (R.O) which is 8.08. while the most similar is  class participation marks and research oriented attribute which 2.50.
+# 
+# We can also try to compute the Manhattan distance:
+#  
+# ```{r}
+# dist.man <- dist(studentsData.scaled, method = "manhattan")
+# dist.man.matrix<-round(as.matrix(dist.man)[1:13, 1:13], 2)
+# rownames(dist.man.matrix) <-c("G","B.Y","Pro","S.M","C.P","R.O","S.T","F.C","A.M","F.E.M","Total","CGPA","Class")
+# colnames(dist.man.matrix)<-c("G","B.Y","Pro","S.M","C.P","R.O","S.T","F.C","A.M","F.E.M","Total","CGPA","Class")
+# dist.man.matrix
+# 
+# 
+# ```
+# 
+# The maximum distance is between Research Oriented and Attendance marks is maximum and minimum distance is between class participation and research oriented which is same as euclidean distance. So there is no difference in these two distance matrices we can say that there is no outlier in our dataset.
+# 
+# We can do the same observations by looking at the graphical visualization of the distance matrix:
+# 
+# ```{r}
+# library(factoextra)
+# 
+# fviz_dist(dist.eucl)
+# ```
+# The red represents high similarity and blue represents low dissimilarity.
+# 
+# # Hierarchical clustering method
+# 
+# Hierarchical clustering is a method of CA which seeks to build a hierarchy of clusters. Hierarchical clustering methods do not require the number of clusters K as an input (i.e., to be fixed in advance).
+# 
+# Strategies for hierarchical clustering generally fall into two types:
+# 1. Agglomerative hierarchical clustering
+# 2. Divisive hierarchical clustering
+# 
+# #Agglomerative hierarchical clustering
+# 
+# ## Using Euclidean Distance and Ward's Linkage Methods:
+# 
+# ```{r}
+# res.hc <- hclust(d = dist.eucl, method = "ward.D2")
+# fviz_dend(res.hc, cex = 0.5)
+# 
+# ```
+# The height of the fusion, provided on the vertical axis, indicates the (dis)similarity/distance
+# between two objects/clusters. The higher the height of the fusion, the less similar the
+# objects are. This height is known as the cophenetic distance between the two objects.
+# 
+# ```{r}
+# # Compute cophentic distance
+# res.coph <- cophenetic(res.hc)
+# ```
+# 
+# ```{r}
+# # Correlation between cophenetic distance and
+# # the original distance
+# cor(dist.eucl, res.coph)
+# ```
+# 
+# 
+# 
+# ```{r}
+# grp <- cutree(res.hc, k = 4)
+#  fviz_dend(res.hc, k = 4, cex = 0.5, k_colors = c("#1762b3", "#E7B800", "#FC4E07","#116300"), color_labels_by_k = TRUE,rect = TRUE)
+# 
+# ```
+# The last cluster is bigger than the first two clusters
+# 
+# ```{r}
+# table(grp)
+#   
+# ```
+# We can visualize the clustering results in the original space via the matrix of pairwise scatterplots:
+# 
+# ```{r}
+#  pairs(studentsData, gap=0, pch=grp, col=c("#1762b3", "#E7B800", "#FC4E07","#116300")[grp])
+# 
+# ```
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# ## Using Euclidean Distance and Average Linkage Methods:
+# 
+# ```{r}
+# res.hc <- hclust(d = dist.eucl, method = "average")
+# fviz_dend(res.hc, cex = 0.5)
+# 
+# ```
+# 
+# The height of the fusion, provided on the vertical axis, indicates the (dis)similarity/distance
+# between two objects/clusters. The higher the height of the fusion, the less similar the
+# objects are. This height is known as the cophenetic distance between the two objects.
+# 
+# ```{r}
+# # Compute cophentic distance
+# res.coph <- cophenetic(res.hc)
+# ```
+# 
+# ```{r}
+# # Correlation between cophenetic distance and
+# # the original distance
+# cor(dist.eucl, res.coph)
+# ```
+# 
+# The correlation value is 0.723 which is very good with compare to the previous WARD.D2 method.
+# 
+# 
+# ```{r}
+# grp <- cutree(res.hc, k = 4)
+#  fviz_dend(res.hc, k = 4, cex = 0.5, k_colors = c("#1762b3", "#E7B800", "#FC4E07","#116300"), color_labels_by_k = TRUE,rect = TRUE)
+# 
+# ```
+# The last cluster is bigger than the first two clusters
+# 
+# ```{r}
+# table(grp)
+#   
+# ```
+# We can visualize the clustering results in the original space via the matrix of pairwise scatterplots:
+# 
+# ```{r}
+#  pairs(studentsData, gap=0, pch=grp, col=c("#1762b3", "#E7B800", "#FC4E07","#116300")[grp])
+# 
+# ```
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# ## Using Euclidean Distance and Single Linkage Methods:
+# 
+# ```{r}
+# res.hc <- hclust(d = dist.eucl, method = "single")
+# fviz_dend(res.hc, cex = 0.5)
+# 
+# ```
+# 
+# The height of the fusion, provided on the vertical axis, indicates the (dis)similarity/distance
+# between two objects/clusters. The higher the height of the fusion, the less similar the
+# objects are. This height is known as the cophenetic distance between the two objects.
+# 
+# ```{r}
+# # Compute cophentic distance
+# res.coph <- cophenetic(res.hc)
+# ```
+# 
+# ```{r}
+# # Correlation between cophenetic distance and
+# # the original distance
+# cor(dist.eucl, res.coph)
+# ```
+# 
+# The correlation value is 0.54 which is very bad with compare to the previous linkage method method.This means that this clustering method does not preserve the true original distances between units.
+# 
+# 
+# ```{r}
+# grp <- cutree(res.hc, k = 4)
+#  fviz_dend(res.hc, k = 4, cex = 0.5, k_colors = c("#1762b3", "#E7B800", "#FC4E07","#116300"), color_labels_by_k = TRUE,rect = TRUE)
+# 
+# ```
+# As we can see, almost all units are grouped in a single cluster and we can check this also through
+# the R code which gives us the clusters size:
+# ```{r}
+# table(grp)
+#   
+# ```
+# We can visualize the clustering results in the original space via the matrix of pairwise scatterplots:
+# 
+# ```{r}
+#  pairs(studentsData, gap=0, pch=grp, col=c("#1762b3", "#E7B800", "#FC4E07","#116300")[grp])
+# 
+# ```
+# 
+# ## Using Manhattan Distance and WARD'S Linkage Methods:
+# 
+# ```{r}
+# res.hc <- hclust(d = dist.man, method = "ward.D2")
+# fviz_dend(res.hc, cex = 0.5)
+# 
+# ```
+# 
+# The height of the fusion, provided on the vertical axis, indicates the (dis)similarity/distance
+# between two objects/clusters. The higher the height of the fusion, the less similar the
+# objects are. This height is known as the cophenetic distance between the two objects.
+# 
+# ```{r}
+# # Compute cophentic distance
+# res.coph <- cophenetic(res.hc)
+# ```
+# 
+# ```{r}
+# # Correlation between cophenetic distance and
+# # the original distance
+# cor(dist.eucl, res.coph)
+# ```
+# 
+# The correlation value is 0.47 which is very low it means this clustering method doesnot preserve the orginal distances.
+# 
+# 
+# ```{r}
+# grp <- cutree(res.hc, k = 4)
+#  fviz_dend(res.hc, k = 4, cex = 0.5, k_colors = c("#1762b3", "#E7B800", "#FC4E07","#116300"), color_labels_by_k = TRUE,rect = TRUE)
+# 
+# ```
+# As we can see, almost all units are grouped in a single cluster and we can check this also through
+# the R code which gives us the clusters size:
+# ```{r}
+# table(grp)
+#   
+# ```
+# We can visualize the clustering results in the original space via the matrix of pairwise scatterplots:
+# 
+# ```{r}
+#  pairs(studentsData, gap=0, pch=grp, col=c("#1762b3", "#E7B800", "#FC4E07","#116300")[grp])
+# 
+# ```
+# 
+# ## Using Manhattan Distance and Average Linkage Methods:
+# 
+# ```{r}
+# res.hc <- hclust(d = dist.eucl, method = "average")
+# fviz_dend(res.hc, cex = 0.5)
+# 
+# ```
+# 
+# The height of the fusion, provided on the vertical axis, indicates the (dis)similarity/distance
+# between two objects/clusters. The higher the height of the fusion, the less similar the
+# objects are. This height is known as the cophenetic distance between the two objects.
+# 
+# ```{r}
+# # Compute cophentic distance
+# res.coph <- cophenetic(res.hc)
+# ```
+# 
+# ```{r}
+# # Correlation between cophenetic distance and
+# # the original distance
+# cor(dist.eucl, res.coph)
+# ```
+# 
+# The correlation value is 0.723 which is same as the Euclidean distance using the average linkage method and its the best 
+# 
+# 
+# ```{r}
+# grp <- cutree(res.hc, k = 4)
+#  fviz_dend(res.hc, k = 4, cex = 0.5, k_colors = c("#1762b3", "#E7B800", "#FC4E07","#116300"), color_labels_by_k = TRUE,rect = TRUE)
+# 
+# ```
+# As we can see, almost all units are grouped in a single cluster and we can check this also through
+# the R code which gives us the clusters size:
+# ```{r}
+# table(grp)
+#   
+# ```
+# We can visualize the clustering results in the original space via the matrix of pairwise scatterplots:
+# 
+# ```{r}
+#  pairs(studentsData, gap=0, pch=grp, col=c("#1762b3", "#E7B800", "#FC4E07","#116300")[grp])
+# 
+# ```
+# 
+# 
+# 
+# 
+# The above heirarchical agglomerative clustering analysis of the dataset suggest that the best combination is with the Euclidean distance with linkage method and same with Manhattan distance as well. 
+# 
+# # Partitioning clustering
+# 
+# ## K-Means Clustering:
+# 
+# K-means clustering is the most commonly used partitioning clustering algorithm. It
+# classifies the n units to the K clusters such that units within the same cluster are as
+# similar as possible (high cluster cohesion), whereas units from different clusters are as
+# dissimilar as possible (high cluster separation).
+# 
+# The basic idea behind k-means clustering consists of defining clusters so that the total
+# intra-cluster variation (known as total within-cluster variation) is minimized.
+# 
+# The K-means clustering requires the users to specify the number of clusters K to be
+# generated.
+# 
+# 
+# ```{r}
+# library(factoextra)
+# fviz_nbclust(studentsData, kmeans, method = "wss") +
+# geom_vline(xintercept = 4, linetype = 2)
+# ```
+# 
+# The plot above represents the variance within the clusters. It decreases as k increases,
+# but it can be seen a bend (or “elbow”) at k = 4. This bend indicates that additional
+# clusters beyond the fourth have little value. In the next section, we’ll classify the
+# observations into 4 clusters.
+# 
+# The K-means clustering using the cluster size 4 is given below:
+# 
+# ```{r}
+# kmean.res <- kmeans(studentsData, 4, nstart = 25)
+# ```
+# 
+# This time we have 4 clusters, the largest being the third, as we can see by the R code:
+# ```{r}
+#  kmean.res$size
+# ```
+# ```{r}
+# # Print the results
+# print(kmean.res)
+# ```
+# 
+# 
+# 
+# ```{r}
+#  fviz_cluster(kmean.res, data = studentsData,palette = c("#2E9FDF", "#FC4E07", "#CF3E4B", "#287233"),ellipse.type = "euclid", star.plot = TRUE,repel = TRUE, ggtheme = theme_minimal() )
+# ```
+# 
+# We can see that separation between clusters is not so clear, because some units are closer to a
+# different cluster than the one they belong to. 
+# 
+# 
+# ```{r}
+# cl2 <- kmean.res$cluster
+# pairs(studentsData, gap=0, pch=cl2, col=c("#2E9FDF", "#FC4E07","#CF3E4B", "#287233")[cl2])
+# ```
+# 
+# From this plot we can understand what variables are useful to find clusters.
+#  The variable sessional marks and final exams marks have good seperation between the clusters in the scatered plot.So if we remove some initial variables from the data it will be good to find the more accurate clusters.But, most of the variables in this case are overlapped and it is difficult to find the clusters in it.
+#   
+# ## K-Medoids Clustering:
+# 
+# Differently from K-means, in K-medoids clustering each cluster is represented by one of the data points in the cluster. These points are named cluster medoids. The term medoid refers to a unit within a cluster for which average dissimilarity between it and all the other members of the cluster is minimal. It corresponds to the most centrally located point in the cluster. These units (one per cluster) can be considered as a representative example of the members of that cluster.
+# 
+# The most common K-medoids clustering method is the PAM (partitioning around medoids) algorithm.
+# 
+# The K-medoids algorithm requires the user to specify K, the number of clusters to be
+# generated (like in K-means clustering). A useful approach to determine the optimal
+# number of clusters is the silhouette method.
+# The silhouette value, for each unit, is a measure of how similar a unit is to its own
+# cluster (cohesion) compared to other clusters (separation).
+# 
+# The R function fviz_nbclust() [factoextra package] provides a convenient solution to
+# estimate the optimal number of clusters.
+# 
+# ```{r}
+# library(cluster)
+# library(factoextra)
+# fviz_nbclust(studentsData, pam, method = "silhouette")+
+# theme_classic()
+# ```
+# We can see that the plot suggest us the number of clusters should be 2 from our dataset.
+# 
+# 
+# ```{r}
+# pam.res <- pam(studentsData, 2)
+# pam.res$medoids 
+# ```
+# we can visualize the obtained cluster using the below plots.
+# 
+# ```{r}
+# fviz_cluster(pam.res,
+# palette = c("#00AFBB", "#FC4E07"), # color palette
+# ellipse.type = "t", # Concentration ellipse
+# repel = TRUE, # Avoid label overplotting (slow)
+# ggtheme = theme_classic()
+# )
+# ```
+# ```{r}
+# pam.clus<- pam.res$clustering
+# pairs(studentsData, gap=0, pch=pam.clus, col= c("#00AFBB", "#FC4E07")[pam.clus] ) 
+# 
+# ```
+# The obove representation shows that there is very low tendency in the dataset for the clustering and we need to remove many attributes in order to find a suitable clustering in the dataset for the analysis or predictions.
+# 
+# 
+# # Cluster Validation:
+# 
+# In the cluster analysis with the dataset we applied the clustering techniques on our data set without checking the validation of the clustering. Cluster validation gives us insights about the dataset that is it valid for applying clustering or not? So, in other words it is the measering of the goodness of the cluster results.
+# 
+# Before applying any clustering method on our data, it’s important to evaluate whether the data set contains meaningful clusters (i.e. non-random structures) or not. This process is defined as the assessing of clustering tendency or the feasibility of the cluster analysis.
+# 
+# 
+# 
+# ```{r}
+# 
+# # Collected data from github repository
+# x <- getURL("https://raw.githubusercontent.com/adeelahmedcsku/student-dataset/main/20-01-2020-data%20developed%20records%20students-changes%20in%20grading%20system%20-%20data%20developed%20records%20students.csv")
+# studentsData <- read.csv(text = x)
+# 
+# studentsData.alter<-data.frame(studentsData[,c(-1,-2,-3,-6,-7,-8,-13)])
+# 
+# # Random data generated from the our data set
+# student.alter.random_df <- apply(studentsData.alter, 2,
+# function(x){runif(length(x), min(x), (max(x)))})
+# student.alter.random_df <- as.data.frame(student.alter.random_df)
+# # Standardize the data sets
+# studentsData.alter.scaled <- scale(studentsData.alter)
+# student.alter.random_df <- scale(student.alter.random_df)
+# 
+# ```
+# 
+# As the data contain more than two variables, we need to reduce the dimensionality
+# in order to plot a scatter plot. This can be done using principal component analysis
+# (PCA) algorithm (R function: prcomp()). After performing PCA, we use the function
+# fviz_pca_ind() [factoextra R package] to visualize the output.
+# 
+# 
+# 
+# ```{r}
+# library("factoextra")
+# # Plot faithful data set
+# fviz_pca_ind(prcomp(studentsData.alter.scaled), title = "PCA - Student data",
+# habillage = studentsData$Class, palette = "jco",
+# geom = "point", ggtheme = theme_classic(),
+# legend = "bottom")
+# ```
+# 
+# 
+# ```{r}
+# # Plot the random df
+# fviz_pca_ind(prcomp(student.alter.random_df), title = "PCA - Random data",
+# geom = "point", ggtheme = theme_classic())
+# ```
+# It can be seen from the graph that student data contains three real clusters while the random data plot has no meaningful clusters.
+# 
+# # Cluster Tendency:
+# 
+# In the previous sections where we computed the k-means algorithm and the hierarchical clustering impose a classification on the random uniformly distributed data set even if there are no meaningful clusters present in it. This is why, clustering tendency assessment methods should be used to evaluate the validity of clustering analysis. That is, whether a given data set contains meaningful clusters.
+# 
+# 
+# So, lets check the cluster tendency in our selected dataset.
+# 
+# We can assess if there are clusters from both a statistical point of view and from a graphical one,
+# by means of, respectively, the Hopkins statistic and the VAT algorithm.
+# 
+# ## Hopkins statistic:
+# 
+# Hopkins statistic on the dataset altered by removing the nominal variables.
+# 
+# ```{r}
+# library(clustertend)
+# hopkins(studentsData.alter.scaled, n = nrow(studentsData.alter.scaled)-1)
+# 
+# ```
+# 
+# Hopkins statistics on the randomly generated data set.
+# 
+# ```{r}
+# hopkins(student.alter.random_df, n = nrow(student.alter.random_df)-1)
+# 
+# ```
+# It can be seen that the student data set which is altered and removed the categorical attrbutes is clusterable because the value of H = 0.19 which is closed to zero.
+# While the random sample of the same data set is not clusterable because the value of the H=0.5.
+# 
+# ## VAT algorithm:
+# 
+# 
+# 
+# ```{r}
+# fviz_dist(dist(studentsData.alter.scaled), show_labels = FALSE)+ labs(title = "Student data")
+# fviz_dist(dist(student.alter.random_df), show_labels = FALSE)+ labs(title = "Random data")
+# ```
+# The dissimilarity matrix image confirms that there is a cluster structure in the
+# standardized Student data set but not in the random one.
+# 
+# 
+# # Determining the optimal number of clusters:
+# 
+# There are many ways to calculate the optimal numbers of clusters, like Elbow method,Silhouette method and gap statistics method.
+# 
+# ## Elbow method
+# ```{r}
+# 
+# fviz_nbclust(studentsData.alter.scaled, kmeans, method = "wss") +
+# geom_vline(xintercept = 4, linetype = 2)+
+# labs(subtitle = "Elbow method")
+# 
+# ```
+# 
+# ## Silhouette method
+# 
+# ```{r}
+# fviz_nbclust(studentsData.alter.scaled, kmeans, method = "silhouette")+
+# labs(subtitle = "Silhouette method")
+# 
+# ```
+# 
+# ## Gap statistic
+# 
+# 
+# ```{r}
+# # nboot = 50 to keep the function speedy.
+# # recommended value: nboot= 500 for your analysis.
+# # Use verbose = FALSE to hide computing progression.
+# set.seed(123)
+# fviz_nbclust(studentsData.alter.scaled, kmeans, nstart = 25, method = "gap_stat", nboot = 500)+
+# labs(subtitle = "Gap statistic method")
+# ```
+# 
+# 
+# 
+# - Elbow method: 4 clusters solution suggested
+# - Silhouette method: 9 clusters solution suggested
+# - Gap statistic method: 1 clusters solution suggested
+# 
+# 
+# ## NbClust Method:
+# 
+# 
+# ```{r}
+# library("NbClust")
+# 
+#  nb <- NbClust(studentsData.alter.scaled, distance = "euclidean", min.nc = 2, max.nc = 10, method = "kmeans")
+# ```
+# 
+# The results of NbClust() can be graphically visualized using fviz nbclust() (in
+# the factoextra package) as follows:
+# ```{r}
+# library("factoextra")
+# fviz_nbclust(nb)
+# 
+# ```
+# 
+# # Clustering Validation Statistics:
+#   
+# The term cluster validation is used to design the procedure of evaluating the goodness of clustering algorithm results. Generally, clustering validation statistics can be categorized into 3 classes:   
+# 
+# 1. Internal cluster validation: Consider the insights of the cluster.
+# 2. External Cluster Validation: Consider the external provided class labels etc.
+# 3. Relative Cluster Validation: Consider the variation in the parameter values like no of clusters etc.
+# 
+# The internal cluster validation allows us to estimate the optimal number of clusters and to select
+# the appropriate clustering algorithm, by means of two indices: the Silhouette Width and the Dunn
+# index.
+# 
+# ## Silhouette plot
+# 
+# The silhouette coecient (Si) measures how similar an object i is to the other objects in its own cluster versus those in the neighbor cluster. 
+# 
+# ```{r}
+#  km.res <- eclust(studentsData.alter.scaled, "kmeans", k = 3, nstart = 25, graph = FALSE)
+#  fviz_silhouette(km.res, palette = "jco", ggtheme = theme_classic())
+# ```
+# ```{r}
+# # Silhouette information
+# silinfo <- km.res$silinfo
+#  silinfo$avg.width 
+# ```
+# The average silhouette width is 0.27. No cluster participate overall widths. Looking at the plot, we can see that in cluster 1 some of the units have a silhouette width higher than the average one and while some have negative silhouette width. While in cluster 2 there most of the units have a silhouette width lower than the average one; in cluster 3 almost half units have a high silhouette width,and some outlier as well with the negative silhouette width others a low one.  
+#   
+#   
+# It can be seen that several samples, in cluster 1 and 3, have a negative silhouette coeffcient.
+# This means that they are not in the right cluster. We can find the name of these samples and determine the clusters they are closer (neighbor cluster), as follow:
+# 
+# ```{r}
+# # Silhouette width of observation
+# sil <- km.res$silinfo$widths[, 1:3]
+# # Objects with negative silhouette
+# neg_sil_index <- which(sil[, 'sil_width'] < 0)
+# sil[neg_sil_index, , drop = FALSE]
+# ```
+# 
+#   There are some elements of cluster 1 which we should include in the cluster 2 and there are also some elements of the cluster 3 which we need to inculde in the cluster 2.
+#   
+# This is a further confirmation that the optimal number of clusters is 2, in fact, if we run the kmeans with K=2, the plot does not present any unit with a negative silhouette width:
+# ```{r}
+# km.res <- eclust(studentsData.alter.scaled, "kmeans", k = 2, nstart = 25, graph = FALSE)
+# fviz_silhouette(km.res, palette = "jco", ggtheme = theme_classic())
+#   
+# ```
+# 
+# ## Dunn Index:
+# 
+# ```{r}
+# library(fpc)
+# # Statistics for k-means clustering
+# km_stats <- cluster.stats(dist(studentsData.alter.scaled), km.res$cluster)
+# # Dun index
+# km_stats$dunn
+# ```
+# The aim of the Dunn index is to identify sets of clusters that are compact, with a small variance
+# between members of the cluster, and well separated. A higher Dunn index indicates better
+# clustering, so it should be maximized.
+
+
+# Choosing the Best Clustering Algorithms
+
+## Internal measures:
+
+We can compare the multiple clustering method using the R library clValid in order to find out that which clustering algorithm suited best for our data.
+
+```{r}
+library(RCurl)
+ # Collected data from github repository
+ x <- getURL("https://raw.githubusercontent.com/adeelahmedcsku/student-dataset/main/20-01-2020-data%20developed%20records%20students-changes%20in%20grading%20system%20-%20data%20developed%20records%20students.csv")
+ studentsData <- read.csv(text = x)
+ 
+ studentsData.alter<-data.frame(studentsData[,c(-1,-2,-3,-6,-7,-8,-13)])
+ 
+ # Random data generated from the our data set
+ student.alter.random_df <- apply(studentsData.alter, 2,
+ function(x){runif(length(x), min(x), (max(x)))})
+ student.alter.random_df <- as.data.frame(student.alter.random_df)
+ # Standardize the data sets
+ studentsData.alter.scaled <- scale(studentsData.alter)
+ student.alter.random_df <- scale(student.alter.random_df)
+library(clValid)
+# Compute clValid
+clmethods <- c("hierarchical","kmeans","pam")
+intern <- clValid(studentsData.alter.scaled, nClust = 2:6,
+clMethods = clmethods, validation = "internal")
+# Summary
+summary(intern)
+```
+  
+In comparing the three clustering methods hierarchicl, k-means and pam connectivity must be minimized  
+hence, the best solution is 14.31 which belongs to hierarchical method.Dunn and Silhouette must be maximized, hence the best solutions are also hierarchical 0.13 and 0.46 respectively.
+
+
+## Stability Measures:
+  
+```{r}
+clmethods <- c("hierarchical","kmeans","pam")
+stab <- clValid(studentsData.alter.scaled, nClust = 2:6, clMethods = clmethods,validation = "stability")
+optimalScores(stab)
+```
+  
+  
+According to the stability measure there is an ex aqua between APN and ADM and the best clustering algorithm is Hierarchical clustering with the number of clusters 2.
+
+# Model Based Clustering
+
+The model based clustering consider the data as coming from a distribution that is mixture of two or more clusters. In model-based clustering, the data is considered as coming from a mixture of density. Each component (i.e. cluster) k is modeled by the normal or Gaussian distribution.
+
+## Choosing the best model:
+The Mclust package uses maximum likelihood to fit all these models, with dierent
+covariance matrix parameterizations, for a range of k components. The best model is selected using the Bayesian Information Criterion or BIC. A large BIC score indicates strong evidence for the corresponding model.
+
+We start by installing the mclust package as follow: install.packages(“mclust”)
+```{r}
+#install.packages("mclust")
+```
+
+```{r}
+library(mclust)
+studentsData.alter<-data.frame(studentsData[,c(-1,-2,-3,-6,-7,-8,-13)])
+studentsData.alter.scaled <- scale(studentsData.alter)
+mc <- Mclust(studentsData.alter.scaled) # Model-based-clustering
+summary(mc) # Print a summary
+```
+For our Student dataset, it can be seen that model-based clustering selected a model with one components (i.e. clusters). The optimal selected model name is XXX model. 
+As the our data set is not fit for this type of clustering i.e, model based clustering. May be we need to improve our dataset or change the  techniques and use the heirarchical clustering which fitted best for our data.
+
+
+
+
+
+  
+  
+  
+
+
+
+

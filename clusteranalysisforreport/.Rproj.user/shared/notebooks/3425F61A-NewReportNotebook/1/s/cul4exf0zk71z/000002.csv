@@ -1,0 +1,5 @@
+"0","```r
+
+screeplot(pca, npcs = length(pca$sdev), type = \"lines\", main = \"Scree Plot for PCA\")
+
+```"

@@ -1,0 +1,5 @@
+"0","```r
+ggpairs(studentsData, #dataset
+        columns = c(4,5,9,10,11,12), #select only the first four columns (exclude Species) 
+        aes(color=Financial.Condition)) #color points by species
+```"
